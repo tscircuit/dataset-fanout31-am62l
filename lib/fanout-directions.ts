@@ -9,14 +9,8 @@ export interface Am62lFanoutDirectionCase {
   exitPosition: Exclude<FanoutExitPosition, "center">
   exitEdge: FanoutEdge
   majorityDirection: MajorityDirection
-  bandCoordinate: number
-  sourceBalls: readonly [string, string, string, string]
+  bandShift: -1 | 0 | 1
 }
-
-const TOP_BALLS = ["A10", "A11", "A12", "A13"] as const
-const RIGHT_BALLS = ["J23", "K23", "L23", "M23"] as const
-const BOTTOM_BALLS = ["AC10", "AC11", "AC12", "AC13"] as const
-const LEFT_BALLS = ["J1", "K1", "L1", "M1"] as const
 
 export const FANOUT_DIRECTION_CASES = [
   {
@@ -26,8 +20,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "topside_left",
     exitEdge: "top",
     majorityDirection: "up",
-    bandCoordinate: -4,
-    sourceBalls: TOP_BALLS,
+    bandShift: -1,
   },
   {
     id: "02-top-center",
@@ -36,8 +29,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "topside_center",
     exitEdge: "top",
     majorityDirection: "up",
-    bandCoordinate: 0,
-    sourceBalls: TOP_BALLS,
+    bandShift: 0,
   },
   {
     id: "03-top-right-offset",
@@ -46,8 +38,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "topside_right",
     exitEdge: "top",
     majorityDirection: "up",
-    bandCoordinate: 4,
-    sourceBalls: TOP_BALLS,
+    bandShift: 1,
   },
   {
     id: "04-right-top-offset",
@@ -56,8 +47,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "rightside_top",
     exitEdge: "right",
     majorityDirection: "right",
-    bandCoordinate: 4,
-    sourceBalls: RIGHT_BALLS,
+    bandShift: -1,
   },
   {
     id: "05-right-center",
@@ -66,8 +56,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "rightside_center",
     exitEdge: "right",
     majorityDirection: "right",
-    bandCoordinate: 0,
-    sourceBalls: RIGHT_BALLS,
+    bandShift: 0,
   },
   {
     id: "06-right-bottom-offset",
@@ -77,8 +66,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "rightside_bottom",
     exitEdge: "right",
     majorityDirection: "right",
-    bandCoordinate: -4,
-    sourceBalls: RIGHT_BALLS,
+    bandShift: 1,
   },
   {
     id: "07-bottom-right-offset",
@@ -88,8 +76,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "bottomside_right",
     exitEdge: "bottom",
     majorityDirection: "down",
-    bandCoordinate: 4,
-    sourceBalls: BOTTOM_BALLS,
+    bandShift: -1,
   },
   {
     id: "08-bottom-center",
@@ -98,8 +85,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "bottomside_center",
     exitEdge: "bottom",
     majorityDirection: "down",
-    bandCoordinate: 0,
-    sourceBalls: BOTTOM_BALLS,
+    bandShift: 0,
   },
   {
     id: "09-bottom-left-offset",
@@ -108,8 +94,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "bottomside_left",
     exitEdge: "bottom",
     majorityDirection: "down",
-    bandCoordinate: -4,
-    sourceBalls: BOTTOM_BALLS,
+    bandShift: 1,
   },
   {
     id: "10-left-bottom-offset",
@@ -118,8 +103,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "leftside_bottom",
     exitEdge: "left",
     majorityDirection: "left",
-    bandCoordinate: -4,
-    sourceBalls: LEFT_BALLS,
+    bandShift: -1,
   },
   {
     id: "11-left-center",
@@ -128,8 +112,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "leftside_center",
     exitEdge: "left",
     majorityDirection: "left",
-    bandCoordinate: 0,
-    sourceBalls: LEFT_BALLS,
+    bandShift: 0,
   },
   {
     id: "12-left-top-offset",
@@ -138,8 +121,7 @@ export const FANOUT_DIRECTION_CASES = [
     exitPosition: "leftside_top",
     exitEdge: "left",
     majorityDirection: "left",
-    bandCoordinate: 4,
-    sourceBalls: LEFT_BALLS,
+    bandShift: 1,
   },
 ] as const satisfies readonly Am62lFanoutDirectionCase[]
 

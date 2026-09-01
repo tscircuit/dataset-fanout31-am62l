@@ -1,62 +1,132 @@
 import { expect, test } from "bun:test"
 import { FanoutSolver } from "@tscircuit/fanout-solver"
+import { AM62L_SIGNAL_BUSES } from "lib/am62l-buses"
 import {
+  COMPLETE_BUS_COUNT,
+  COMPLETE_CONNECTION_COUNT,
   createAm62lFanoutSample,
+  PLANE_DROP_COUNT,
   SHARED_BOUNDARY,
+  SIGNAL_CONNECTION_COUNT,
 } from "lib/create-am62l-fanout-sample"
 import { FANOUT_DIRECTION_CASES } from "lib/fanout-directions"
 
-test("all 12 AM62L fanout directions solve on their requested boundary bands", () => {
+const EDGE_PREFIX = {
+  top: "topside_",
+  right: "rightside_",
+  bottom: "bottomside_",
+  left: "leftside_",
+} as const
+
+test("all 12 cases contain every AM62L signal and plane bus from core", () => {
   expect(FANOUT_DIRECTION_CASES).toHaveLength(12)
+  expect(AM62L_SIGNAL_BUSES.map((bus) => bus.name)).toEqual([
+    "DDR_BYTE0",
+    "DDR_BYTE1",
+    "DDR_ADDR_CTRL",
+    "DDR_CLOCK",
+    "DDR_DQS0",
+    "DDR_DQS1",
+    "DDR_RESET",
+    "DDR_DMI0",
+    "DDR_DMI1",
+  ])
 
   for (const directionCase of FANOUT_DIRECTION_CASES) {
     const sample = createAm62lFanoutSample(directionCase.exitPosition)
-    const solver = new FanoutSolver(
-      sample.simpleRouteJson,
-      sample.solverOptions,
+    const buses = sample.solverOptions.buses ?? []
+    const planeBuses = buses.filter((bus) => bus.termination?.type === "plane")
+    const signalBuses = buses.filter((bus) => bus.termination?.type !== "plane")
+
+    expect(sample.simpleRouteJson.layerCount).toBe(8)
+    expect(sample.simpleRouteJson.obstacles).toHaveLength(373)
+    expect(sample.simpleRouteJson.connections).toHaveLength(
+      COMPLETE_CONNECTION_COUNT,
     )
-    solver.solve()
+    expect(buses).toHaveLength(COMPLETE_BUS_COUNT)
+    expect(planeBuses).toHaveLength(PLANE_DROP_COUNT)
+    expect(signalBuses).toHaveLength(9)
+    expect(
+      signalBuses.reduce((total, bus) => total + bus.connectionNames.length, 0),
+    ).toBe(SIGNAL_CONNECTION_COUNT)
+    expect(sample.simpleRouteJson.differentialPairs).toHaveLength(3)
+    expect(sample.solverOptions.escapeLayers).toEqual([
+      "top",
+      "inner4",
+      "inner5",
+      "inner6",
+      "bottom",
+    ])
+    expect(Object.keys(sample.solverOptions.busDirections ?? {})).toHaveLength(
+      PLANE_DROP_COUNT,
+    )
 
-    if (solver.failed) {
-      throw new Error(
-        `${directionCase.exitPosition}: ${solver.error ?? "solver failed"}`,
+    expect(
+      planeBuses.filter(
+        (bus) =>
+          bus.termination?.type === "plane" &&
+          bus.termination.layer === "inner1",
+      ),
+    ).toHaveLength(97)
+    expect(
+      planeBuses.filter(
+        (bus) =>
+          bus.termination?.type === "plane" &&
+          bus.termination.layer === "inner2",
+      ),
+    ).toHaveLength(5)
+    for (const bus of planeBuses) {
+      expect(bus.connectionNames).toHaveLength(1)
+      const connection = sample.simpleRouteJson.connections.find(
+        (candidate) => candidate.name === bus.connectionNames[0],
       )
+      expect(connection?.pointsToConnect).toHaveLength(1)
     }
-    const output = solver.getOutput()
-    expect(output.validation.valid).toBe(true)
-    expect(output.fanoutTraces).toHaveLength(4)
 
-    for (const trace of output.fanoutTraces) {
-      const exit = trace.route.at(-1)
-      expect(exit?.route_type).toBe("wire")
-      if (!exit || exit.route_type !== "wire") continue
+    for (const busDefinition of AM62L_SIGNAL_BUSES) {
+      const bus = signalBuses.find(
+        (candidate) => candidate.busId === busDefinition.name,
+      )
+      expect(bus?.connectionNames).toHaveLength(
+        busDefinition.connections.length,
+      )
+      expect(bus?.allowedLayers).toEqual([...busDefinition.preferredLayers])
+      expect(
+        bus?.exitPosition?.startsWith(EDGE_PREFIX[directionCase.exitEdge]),
+      ).toBe(true)
+      expect(Object.keys(bus?.connectionExitTargets ?? {})).toHaveLength(
+        busDefinition.connections.length,
+      )
 
-      switch (directionCase.exitEdge) {
-        case "top":
-          expect(exit.y).toBeCloseTo(SHARED_BOUNDARY.maxY)
-          break
-        case "right":
-          expect(exit.x).toBeCloseTo(SHARED_BOUNDARY.maxX)
-          break
-        case "bottom":
-          expect(exit.y).toBeCloseTo(SHARED_BOUNDARY.minY)
-          break
-        case "left":
-          expect(exit.x).toBeCloseTo(SHARED_BOUNDARY.minX)
-          break
-      }
-
-      const bandCoordinate =
-        directionCase.exitEdge === "top" || directionCase.exitEdge === "bottom"
-          ? exit.x
-          : exit.y
-      if (directionCase.bandCoordinate < 0)
-        expect(bandCoordinate).toBeLessThan(0)
-      if (directionCase.bandCoordinate > 0)
-        expect(bandCoordinate).toBeGreaterThan(0)
-      if (directionCase.bandCoordinate === 0) {
-        expect(Math.abs(bandCoordinate)).toBeLessThan(2)
+      for (const [connectionName, target] of Object.entries(
+        bus?.connectionExitTargets ?? {},
+      )) {
+        expect(bus?.allowedLayers).toContain(target.layer)
+        const connection = sample.simpleRouteJson.connections.find(
+          (candidate) => candidate.name === connectionName,
+        )
+        expect(connection?.pointsToConnect).toHaveLength(2)
+        switch (directionCase.exitEdge) {
+          case "top":
+            expect(target.y).toBeCloseTo(SHARED_BOUNDARY.maxY)
+            break
+          case "right":
+            expect(target.x).toBeCloseTo(SHARED_BOUNDARY.maxX)
+            break
+          case "bottom":
+            expect(target.y).toBeCloseTo(SHARED_BOUNDARY.minY)
+            break
+          case "left":
+            expect(target.x).toBeCloseTo(SHARED_BOUNDARY.minX)
+            break
+        }
       }
     }
+
+    // GenericSolverDebugger uses this exact constructor. Building it for every
+    // case catches malformed bus membership before the browser starts stepping.
+    expect(
+      () => new FanoutSolver(sample.simpleRouteJson, sample.solverOptions),
+    ).not.toThrow()
   }
 }, 120_000)

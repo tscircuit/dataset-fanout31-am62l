@@ -44,14 +44,15 @@ export default function Am62lFanoutDirectionsPage() {
         <div>
           <strong>Dataset Fanout31 · AM62L directional exits</strong>
           <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>
-            373-ball AM62L32BOGHAANBR · 0.5 mm pitch · 12 fanout directions
+            373-ball AM62L32BOGHAANBR · 135 connections · 111 buses · 8 layers
           </div>
         </div>
 
         <div style={{ color: "#475569", fontSize: 13 }}>
-          Each case is generated from TSX using the AM62L footprint from the
-          tscircuit/core progressive-fanout repro. Four perimeter balls escape
-          toward one side, with left/center/right or top/center/bottom offsets.
+          Every case is generated from TSX using the complete tscircuit/core
+          progressive-fanout workload: all 33 DDR signals in nine buses, three
+          differential pairs, and 102 GND/VDDS_DDR plane drops. The signal buses
+          share one majority side while retaining their offset bands.
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -103,6 +104,27 @@ export default function Am62lFanoutDirectionsPage() {
           </span>
           <code>{selectedCase.exitPosition}</code>
           <span style={{ color: "#475569" }}>{sample.description}</span>
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {Object.entries(sample.signalBusExitPositions).map(
+            ([busName, busExitPosition]) => (
+              <span
+                key={busName}
+                style={{
+                  background: "#eef2ff",
+                  border: "1px solid #c7d2fe",
+                  borderRadius: 999,
+                  color: "#3730a3",
+                  fontFamily: "ui-monospace, SFMono-Regular, monospace",
+                  fontSize: 11,
+                  padding: "4px 7px",
+                }}
+              >
+                {busName} → {busExitPosition}
+              </span>
+            ),
+          )}
         </div>
       </header>
 
