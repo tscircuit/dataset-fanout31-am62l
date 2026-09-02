@@ -1,11 +1,19 @@
-import { getSimpleRouteJsonFromCircuitJson, RootCircuit } from "@tscircuit/core"
+import {
+  type AutorouterCompleteEvent,
+  type AutorouterErrorEvent,
+  type AutorouterProgressEvent,
+  type GenericLocalAutorouter,
+  RootCircuit,
+  type SimpleRouteJson,
+  type SimplifiedPcbTrace,
+  type SolverStartedEvent,
+} from "@tscircuit/core"
 import type {
-  FanoutBusSpec,
   FanoutExitPosition,
   FanoutSolver,
   FanoutSolverOptions,
 } from "@tscircuit/fanout-solver"
-import { Fragment, type ReactElement } from "react"
+import { Fragment } from "react"
 import {
   AM62L_DIFFERENTIAL_PAIRS,
   AM62L_PLANE_DROPS,
@@ -19,30 +27,62 @@ import {
   getFanoutDirectionCase,
   type Am62lFanoutDirectionCase,
 } from "./fanout-directions"
-
-export const SHARED_BOUNDARY = {
-  minX: -8.62808,
-  maxX: 8.62808,
-  minY: -8.62808,
-  maxY: 8.62808,
-} as const
+import { Lpddr4 } from "./lpddr4-footprint"
 
 export const COMPLETE_CONNECTION_COUNT = 135
 export const COMPLETE_BUS_COUNT = 111
+export const COMPLETE_OBSTACLE_COUNT = 573
 export const SIGNAL_CONNECTION_COUNT = 33
 export const PLANE_DROP_COUNT = 102
 
-const TARGET_TRACK_PITCH = 0.25128
-const BAND_CENTER_OFFSET = 4
+const FANOUT_ROUTING_LAYERS = [
+  "top",
+  "inner4",
+  "inner5",
+  "inner6",
+  "bottom",
+] as const
+const LPDDR4_DISTANCE_FROM_CENTER = 17
+const CAPTURE_COMPLETE_ERROR = "AM62L_FANOUT_DATASET_CAPTURE_COMPLETE"
+
+let captureConsoleErrorDepth = 0
+let originalConsoleError: typeof console.error | undefined
+const filteredCaptureConsoleError = (
+  ...args: Parameters<typeof console.error>
+) => {
+  if (
+    args.some((argument) => String(argument).includes(CAPTURE_COMPLETE_ERROR))
+  )
+    return
+  originalConsoleError?.(...args)
+}
+
+const withoutCaptureConsoleError = async <Result,>(
+  operation: () => Promise<Result>,
+): Promise<Result> => {
+  if (captureConsoleErrorDepth === 0) {
+    originalConsoleError = console.error
+    console.error = filteredCaptureConsoleError
+  }
+  captureConsoleErrorDepth += 1
+  try {
+    return await operation()
+  } finally {
+    captureConsoleErrorDepth -= 1
+    if (captureConsoleErrorDepth === 0) {
+      if (
+        console.error === filteredCaptureConsoleError &&
+        originalConsoleError
+      ) {
+        console.error = originalConsoleError
+      }
+      originalConsoleError = undefined
+    }
+  }
+}
+
 type BoundaryExitPosition = Exclude<FanoutExitPosition, "center">
 type FanoutSimpleRouteJson = ConstructorParameters<typeof FanoutSolver>[0]
-
-interface SignalTarget {
-  x: number
-  y: number
-  layer: string
-  band: BusBand
-}
 
 export interface Am62lFanoutSample {
   id: string
@@ -75,130 +115,103 @@ export function getSignalBusExitPosition(
   return positionsByEdge[directionCase.exitEdge][band + 1]!
 }
 
-const getTargetAcrossEdgeCoordinate = (
+const getSignalBusExitPositions = (
   directionCase: Am62lFanoutDirectionCase,
-  band: BusBand,
-  offset: number,
-): number => {
-  const orientation =
-    directionCase.exitEdge === "right" || directionCase.exitEdge === "bottom"
-      ? -1
-      : 1
-  return orientation * band * BAND_CENTER_OFFSET + offset
+): Record<DdrBusName, BoundaryExitPosition> =>
+  Object.fromEntries(
+    AM62L_SIGNAL_BUSES.map((bus) => [
+      bus.name,
+      getSignalBusExitPosition(directionCase, bus.name),
+    ]),
+  ) as Record<DdrBusName, BoundaryExitPosition>
+
+const getOppositeExitPosition = (
+  exitPosition: BoundaryExitPosition,
+): BoundaryExitPosition => {
+  const [edge, band] = exitPosition.split("side_")
+  if (!edge || !band) {
+    throw new Error(`Cannot mirror fanout exit position ${exitPosition}`)
+  }
+  const oppositeEdge = {
+    top: "bottom",
+    right: "left",
+    bottom: "top",
+    left: "right",
+  }[edge as "top" | "right" | "bottom" | "left"]
+  if (!oppositeEdge) {
+    throw new Error(`Cannot mirror fanout exit position ${exitPosition}`)
+  }
+  return `${oppositeEdge}side_${band}` as BoundaryExitPosition
 }
 
-const placeTargetOnBoundary = (
+const getLpddr4Placement = (
   directionCase: Am62lFanoutDirectionCase,
-  acrossEdgeCoordinate: number,
-  layer: string,
-  band: BusBand,
-): SignalTarget => {
+): { pcbX: number; pcbY: number; pcbRotation: number } => {
   switch (directionCase.exitEdge) {
     case "top":
       return {
-        x: acrossEdgeCoordinate,
-        y: SHARED_BOUNDARY.maxY,
-        layer,
-        band,
+        pcbX: 0,
+        pcbY: LPDDR4_DISTANCE_FROM_CENTER,
+        pcbRotation: 90,
       }
     case "right":
       return {
-        x: SHARED_BOUNDARY.maxX,
-        y: acrossEdgeCoordinate,
-        layer,
-        band,
+        pcbX: LPDDR4_DISTANCE_FROM_CENTER,
+        pcbY: 0,
+        pcbRotation: 0,
       }
     case "bottom":
       return {
-        x: acrossEdgeCoordinate,
-        y: SHARED_BOUNDARY.minY,
-        layer,
-        band,
+        pcbX: 0,
+        pcbY: -LPDDR4_DISTANCE_FROM_CENTER,
+        pcbRotation: 90,
       }
     case "left":
       return {
-        x: SHARED_BOUNDARY.minX,
-        y: acrossEdgeCoordinate,
-        layer,
-        band,
+        pcbX: -LPDDR4_DISTANCE_FROM_CENTER,
+        pcbY: 0,
+        pcbRotation: 0,
       }
   }
 }
 
-function createSignalTargets(
-  directionCase: Am62lFanoutDirectionCase,
-): ReadonlyMap<string, SignalTarget> {
-  const connectionsByBand = new Map<
-    BusBand,
-    Array<{
-      traceName: string
-      layer: string
-    }>
-  >([
-    [-1, []],
-    [0, []],
-    [1, []],
-  ])
-
-  for (const bus of AM62L_SIGNAL_BUSES) {
-    const band = clampBand(bus.baseBand + directionCase.bandShift)
-    const bandConnections = connectionsByBand.get(band)!
-    for (const [connectionIndex, traceName] of bus.connections.entries()) {
-      const layer =
-        bus.preferredLayers[connectionIndex % bus.preferredLayers.length]
-      if (!layer) throw new Error(`Missing preferred layer for ${traceName}`)
-      bandConnections.push({ traceName, layer })
-    }
+function createImmediateAutorouter(
+  input: SimpleRouteJson,
+): GenericLocalAutorouter {
+  const eventHandlers = {
+    complete: [] as Array<(event: AutorouterCompleteEvent) => void>,
+    error: [] as Array<(event: AutorouterErrorEvent) => void>,
+    progress: [] as Array<(event: AutorouterProgressEvent) => void>,
   }
 
-  const targets = new Map<string, SignalTarget>()
-  for (const band of [-1, 0, 1] as const) {
-    const bandConnections = connectionsByBand.get(band)!
-    for (const [connectionIndex, connection] of bandConnections.entries()) {
-      const offset =
-        (connectionIndex - (bandConnections.length - 1) / 2) *
-        TARGET_TRACK_PITCH
-      const acrossEdgeCoordinate = getTargetAcrossEdgeCoordinate(
-        directionCase,
-        band,
-        offset,
-      )
-      targets.set(
-        connection.traceName,
-        placeTargetOnBoundary(
-          directionCase,
-          acrossEdgeCoordinate,
-          connection.layer,
-          band,
-        ),
-      )
-    }
+  return {
+    input,
+    isRouting: false,
+    start() {
+      if (this.isRouting) return
+      this.isRouting = true
+      queueMicrotask(() => {
+        this.isRouting = false
+        for (const handler of eventHandlers.complete) {
+          handler({ type: "complete", traces: [] })
+        }
+      })
+    },
+    stop() {
+      this.isRouting = false
+    },
+    on(event, callback) {
+      eventHandlers[event].push(callback as never)
+    },
+    solveSync(): SimplifiedPcbTrace[] {
+      return []
+    },
   }
-  return targets
 }
 
-const getPlaneDummyTarget = (connectionIndex: number) => ({
-  x: 12 + (connectionIndex % 17) * 0.35,
-  y: -10 + Math.floor(connectionIndex / 17) * 0.35,
-})
-
-const ORDERED_TRACE_CONNECTIONS = [
-  ...AM62L_PLANE_DROPS.map((drop) => ({
-    pinNumber: drop.pinNumber,
-    traceName: drop.traceName,
-  })),
-  ...AM62L_SIGNAL_CONNECTIONS.map((connection) => ({
-    pinNumber: connection.socPinNumber,
-    traceName: connection.traceName,
-  })),
-]
-
-const TARGET_PIN_NUMBER_BY_TRACE_NAME = new Map(
-  ORDERED_TRACE_CONNECTIONS.map((connection, connectionIndex) => [
-    connection.traceName,
-    connectionIndex + 1,
-  ]),
-)
+const createBoardNoopAlgorithm = async (
+  input: SimpleRouteJson,
+): Promise<GenericLocalAutorouter> => createImmediateAutorouter(input)
 
 export function Am62lFanoutCircuit({
   exitPosition,
@@ -206,26 +219,20 @@ export function Am62lFanoutCircuit({
   exitPosition: BoundaryExitPosition
 }) {
   const directionCase = getFanoutDirectionCase(exitPosition)
-  const signalTargets = createSignalTargets(directionCase)
-  const planeTargetByTraceName = new Map(
-    AM62L_PLANE_DROPS.map((drop, connectionIndex) => [
-      drop.traceName,
-      getPlaneDummyTarget(connectionIndex),
+  const signalBusExitPositions = getSignalBusExitPositions(directionCase)
+  const dramBusExitPositions = Object.fromEntries(
+    Object.entries(signalBusExitPositions).map(([busName, busExitPosition]) => [
+      busName,
+      getOppositeExitPosition(busExitPosition),
     ]),
-  )
-  const targetByTraceName = new Map<string, { x: number; y: number }>([
-    ...planeTargetByTraceName,
-    ...[...signalTargets].map(
-      ([traceName, target]) => [traceName, target] as const,
-    ),
-  ])
+  ) as Record<DdrBusName, BoundaryExitPosition>
+  const lpddr4Placement = getLpddr4Placement(directionCase)
 
   return (
     <board
-      width="40mm"
-      height="40mm"
+      width="52mm"
+      height="52mm"
       layers={8}
-      routingDisabled
       defaultTraceWidth="0.08128mm"
       minTraceWidth="0.08128mm"
       minTraceToPadEdgeClearance="0.05mm"
@@ -233,18 +240,52 @@ export function Am62lFanoutCircuit({
       minViaHoleEdgeToViaHoleEdgeClearance="0.1016mm"
       minViaHoleDiameter="0.1mm"
       minViaPadDiameter="0.24mm"
+      pcbStyle={{ viaHoleDiameter: "0.1mm", viaPadDiameter: "0.24mm" }}
       allowBlindAndBuriedVias={false}
       isViaInPadAllowed={false}
+      autorouter="default"
     >
       <net name="GND" />
       <net name="VDD_LPDDR4" />
-      {AM62L_PLANE_DROPS.map((drop) => (
-        <Fragment key={`plane-bus-${drop.traceName}`}>
-          <bus name={drop.traceName} connections={[drop.traceName]} />
-        </Fragment>
-      ))}
+      <autoroutingphase
+        autorouter={{ algorithmFn: createBoardNoopAlgorithm }}
+      />
+      <copperpour layer="inner1" connectsTo="net.GND" />
+      <copperpour layer="inner2" connectsTo="net.VDD_LPDDR4" />
+
+      <breakout
+        name="SOC_FANOUT"
+        padding="3mm"
+        autorouter="fanout"
+        fanoutRoutingLayers={[...FANOUT_ROUTING_LAYERS]}
+        busFanoutDirections={signalBusExitPositions}
+      >
+        <Am62l />
+        {AM62L_PLANE_DROPS.map((drop) => (
+          <Fragment key={drop.traceName}>
+            <trace
+              name={drop.traceName}
+              from={`.U1 > .pin${drop.pinNumber}`}
+              to={`net.${drop.netName}`}
+            />
+          </Fragment>
+        ))}
+      </breakout>
+
+      <breakout
+        name="DRAM_FANOUT"
+        pcbX={lpddr4Placement.pcbX}
+        pcbY={lpddr4Placement.pcbY}
+        padding="3mm"
+        routingDisabled
+        fanoutRoutingLayers={[...FANOUT_ROUTING_LAYERS]}
+        busFanoutDirections={dramBusExitPositions}
+      >
+        <Lpddr4 pcbX={0} pcbY={0} pcbRotation={lpddr4Placement.pcbRotation} />
+      </breakout>
+
       {AM62L_SIGNAL_BUSES.map((bus) => (
-        <Fragment key={`signal-bus-${bus.name}`}>
+        <Fragment key={bus.name}>
           <bus
             name={bus.name}
             connections={[...bus.connections]}
@@ -265,272 +306,67 @@ export function Am62lFanoutCircuit({
           />
         </Fragment>
       ))}
-      <Am62l />
-      <chip
-        name="J1"
-        pcbX={0}
-        pcbY={0}
-        footprint={
-          <footprint>
-            {ORDERED_TRACE_CONNECTIONS.map((connection, connectionIndex) => {
-              const target = targetByTraceName.get(connection.traceName)
-              if (!target) {
-                throw new Error(`Missing target for ${connection.traceName}`)
-              }
-              return (
-                <Fragment key={`target-${connection.traceName}`}>
-                  <smtpad
-                    portHints={[`pin${connectionIndex + 1}`]}
-                    pcbX={target.x}
-                    pcbY={target.y}
-                    radius="0.1mm"
-                    shape="circle"
-                  />
-                </Fragment>
-              )
-            })}
-          </footprint>
-        }
-      />
-      {ORDERED_TRACE_CONNECTIONS.map((connection) => {
-        const targetPinNumber = TARGET_PIN_NUMBER_BY_TRACE_NAME.get(
-          connection.traceName,
-        )
-        if (!targetPinNumber) {
-          throw new Error(`Missing target pin for ${connection.traceName}`)
-        }
-        return (
-          <Fragment key={`trace-${connection.traceName}`}>
-            <trace
-              name={connection.traceName}
-              from={`.U1 > .pin${connection.pinNumber}`}
-              to={`.J1 > .pin${targetPinNumber}`}
-            />
-          </Fragment>
-        )
-      })}
+      {AM62L_SIGNAL_CONNECTIONS.map((connection) => (
+        <Fragment key={connection.traceName}>
+          <trace
+            name={connection.traceName}
+            from={`.U1 > .pin${connection.socPinNumber}`}
+            to={`.U2 > .pin${connection.memoryPinNumber}`}
+          />
+        </Fragment>
+      ))}
       <pcbnotetext
         pcbX={0}
         pcbY={-11.5}
         fontSize={0.7}
-        text={`AM62L · ${directionCase.name} · 135 connections`}
+        text={`AM62L · ${directionCase.name} · core winding-generated exits`}
       />
     </board>
   )
 }
 
-function getRequiredRenderedBus(
-  simpleRouteJson: FanoutSimpleRouteJson,
-  busId: string,
-) {
-  const bus = simpleRouteJson.buses?.find(
-    (candidate) => candidate.busId === busId,
-  )
-  if (!bus) throw new Error(`The TSX circuit did not emit bus ${busId}`)
-  return bus
-}
-
-function getSourceComponentId(simpleRouteJson: FanoutSimpleRouteJson): string {
-  const sourceObstacle = simpleRouteJson.obstacles.find(
-    (obstacle) =>
-      obstacle.componentId !== undefined &&
-      Math.abs(obstacle.center.x) <= 5.5 &&
-      Math.abs(obstacle.center.y) <= 5.5,
-  )
-  if (!sourceObstacle?.componentId) {
-    throw new Error("Unable to identify the TSX-generated AM62L component")
-  }
-  return sourceObstacle.componentId
-}
-
-export function createAm62lFanoutSample(
+export async function createAm62lFanoutSample(
   exitPosition: BoundaryExitPosition,
-  circuitElement?: ReactElement,
-): Am62lFanoutSample {
+): Promise<Am62lFanoutSample> {
   const directionCase = getFanoutDirectionCase(exitPosition)
-  const signalTargets = createSignalTargets(directionCase)
+  const signalBusExitPositions = getSignalBusExitPositions(directionCase)
+  let capturedConstructorArgs:
+    | readonly [FanoutSimpleRouteJson, FanoutSolverOptions]
+    | undefined
   const circuit = new RootCircuit()
-  circuit.add(
-    circuitElement ?? <Am62lFanoutCircuit exitPosition={exitPosition} />,
-  )
-  circuit.render()
-  const board = circuit.firstChild
-  if (!board) throw new Error("The TSX circuit did not emit its board")
+  circuit.on("solver:started", (event: SolverStartedEvent) => {
+    if (event.solverName !== "FanoutSolver" || capturedConstructorArgs) return
+    capturedConstructorArgs = structuredClone(
+      event.solverConstructorArgs,
+    ) as unknown as readonly [FanoutSimpleRouteJson, FanoutSolverOptions]
 
-  const { simpleRouteJson: renderedSimpleRouteJson } =
-    getSimpleRouteJsonFromCircuitJson({
-      db: circuit.db,
-      subcircuitComponent: board,
-    })
-  const simpleRouteJson =
-    renderedSimpleRouteJson as unknown as FanoutSimpleRouteJson
-  const sourceComponentId = getSourceComponentId(simpleRouteJson)
-  const connectionByName = new Map(
-    simpleRouteJson.connections.map((connection) => [
-      connection.name,
-      connection,
-    ]),
-  )
-  const connectionNameByTraceName = new Map<string, string>()
-  const buses: FanoutBusSpec[] = []
-  const busDirections: Record<string, "up" | "right" | "down" | "left"> = {}
+    // Core emits this event after its winding stage and immediately before
+    // FanoutSolver.solve(). Stop that first solve; GenericSolverDebugger owns
+    // the solver instance that users step through.
+    throw new Error(CAPTURE_COMPLETE_ERROR)
+  })
+  circuit.add(<Am62lFanoutCircuit exitPosition={exitPosition} />)
+  await withoutCaptureConsoleError(() => circuit.renderUntilSettled())
 
-  for (const drop of AM62L_PLANE_DROPS) {
-    const renderedBus = getRequiredRenderedBus(simpleRouteJson, drop.traceName)
-    const connectionName = renderedBus.connectionNames[0]
-    if (!connectionName || renderedBus.connectionNames.length !== 1) {
-      throw new Error(`Plane bus ${drop.traceName} must contain one connection`)
-    }
-    const connection = connectionByName.get(connectionName)
-    if (!connection)
-      throw new Error(`Missing plane connection ${connectionName}`)
-    const sourcePoint = connection.pointsToConnect.find((point) =>
-      (point as { port_selector?: string }).port_selector?.startsWith("U1."),
-    )
-    if (!sourcePoint)
-      throw new Error(`Missing AM62L endpoint for ${drop.traceName}`)
-    connection.pointsToConnect = [sourcePoint]
-    connection.netConnectionName = drop.netName
-    connection.nominalTraceWidth = 0.08128
-    connectionNameByTraceName.set(drop.traceName, connectionName)
-    buses.push({
-      busId: drop.traceName,
-      connectionNames: [connectionName],
-      termination: { type: "plane", layer: drop.layer },
-    })
-    busDirections[drop.traceName] = drop.direction
+  if (!capturedConstructorArgs) {
+    throw new Error("Core did not emit the SOC_FANOUT solver input")
   }
 
-  const signalBusExitPositions = {} as Record<DdrBusName, BoundaryExitPosition>
-  for (const busDefinition of AM62L_SIGNAL_BUSES) {
-    const renderedBus = getRequiredRenderedBus(
-      simpleRouteJson,
-      busDefinition.name,
-    )
-    if (
-      renderedBus.connectionNames.length !== busDefinition.connections.length
-    ) {
-      throw new Error(
-        `${busDefinition.name} emitted ${renderedBus.connectionNames.length} connections; expected ${busDefinition.connections.length}`,
-      )
-    }
-    const connectionExitTargets: Record<
-      string,
-      { x: number; y: number; layer: string }
-    > = {}
-    for (const [
-      connectionIndex,
-      traceName,
-    ] of busDefinition.connections.entries()) {
-      const connectionName = renderedBus.connectionNames[connectionIndex]
-      if (!connectionName)
-        throw new Error(`Missing connection for ${traceName}`)
-      const connection = connectionByName.get(connectionName)
-      const target = signalTargets.get(traceName)
-      if (!connection || !target) {
-        throw new Error(
-          `Missing generated connection or target for ${traceName}`,
-        )
-      }
-      const targetPoint = connection.pointsToConnect.find((point) =>
-        (point as { port_selector?: string }).port_selector?.startsWith("J1."),
-      )
-      if (!targetPoint)
-        throw new Error(`Missing boundary endpoint for ${traceName}`)
-      Object.assign(targetPoint, {
-        x: target.x,
-        y: target.y,
-        layer: target.layer,
-      })
-      connection.nominalTraceWidth = 0.08128
-      connectionExitTargets[connectionName] = {
-        x: target.x,
-        y: target.y,
-        layer: target.layer,
-      }
-      connectionNameByTraceName.set(traceName, connectionName)
-    }
-    const busExitPosition = getSignalBusExitPosition(
-      directionCase,
-      busDefinition.name,
-    )
-    signalBusExitPositions[busDefinition.name] = busExitPosition
-    buses.push({
-      busId: busDefinition.name,
-      connectionNames: [...renderedBus.connectionNames],
-      sourceComponentId,
-      exitPosition: busExitPosition,
-      allowedLayers: [...busDefinition.preferredLayers],
-      maxLengthSkew:
-        "maxLengthSkew" in busDefinition
-          ? busDefinition.maxLengthSkew
-          : undefined,
-      connectionExitTargets,
-    })
-  }
-
-  simpleRouteJson.obstacles = simpleRouteJson.obstacles.filter(
-    (obstacle) => obstacle.componentId === sourceComponentId,
-  )
-  simpleRouteJson.buses = buses
-  simpleRouteJson.differentialPairs = AM62L_DIFFERENTIAL_PAIRS.map((pair) => {
-    const positiveConnection = connectionNameByTraceName.get(
-      pair.positiveConnection,
-    )
-    const negativeConnection = connectionNameByTraceName.get(
-      pair.negativeConnection,
-    )
-    if (!positiveConnection || !negativeConnection) {
-      throw new Error(`Missing generated connections for ${pair.name}`)
-    }
-    return {
-      connectionNames: [positiveConnection, negativeConnection],
-      lengthTolerance: pair.lengthTolerance,
-    }
-  })
-
-  Object.assign(simpleRouteJson, {
-    layerCount: 8,
-    minTraceWidth: 0.08128,
-    nominalTraceWidth: 0.08128,
-    minViaDiameter: 0.24,
-    minViaPadDiameter: 0.24,
-    minViaHoleDiameter: 0.1,
-    min_via_hole_diameter: 0.1,
-    min_via_pad_diameter: 0.24,
-    minTraceToPadEdgeClearance: 0.05,
-    minViaEdgeToPadEdgeClearance: 0.08128,
-    minViaHoleEdgeToViaHoleEdgeClearance: 0.1016,
-    minPlatedHoleDrillEdgeToDrillEdgeClearance: 0.15,
-    minPadEdgeToPadEdgeClearance: 0.1,
-    minBoardEdgeClearance: 0.2,
-    bounds: { ...SHARED_BOUNDARY },
-    allowBlindAndBuriedVias: false,
-    allowViaInPad: false,
-  })
+  const [simpleRouteJson, solverOptions] = capturedConstructorArgs
+  const buses = solverOptions.buses ?? []
 
   if (simpleRouteJson.connections.length !== COMPLETE_CONNECTION_COUNT) {
     throw new Error(
       `Expected ${COMPLETE_CONNECTION_COUNT} connections, got ${simpleRouteJson.connections.length}`,
     )
   }
-  if (simpleRouteJson.obstacles.length !== 373) {
+  if (simpleRouteJson.obstacles.length !== COMPLETE_OBSTACLE_COUNT) {
     throw new Error(
-      `Expected all 373 AM62L pad obstacles, got ${simpleRouteJson.obstacles.length}`,
+      `Expected ${COMPLETE_OBSTACLE_COUNT} AM62L and LPDDR4 pad obstacles, got ${simpleRouteJson.obstacles.length}`,
     )
   }
   if (buses.length !== COMPLETE_BUS_COUNT) {
     throw new Error(`Expected ${COMPLETE_BUS_COUNT} buses, got ${buses.length}`)
-  }
-
-  const solverOptions: FanoutSolverOptions = {
-    buses,
-    borderDistribution: "even",
-    compactBusTracks: true,
-    busDirections,
-    escapeLayers: ["top", "inner4", "inner5", "inner6", "bottom"],
-    allowBlindAndBuriedVias: false,
-    sharedBoundary: { ...SHARED_BOUNDARY },
   }
 
   return {

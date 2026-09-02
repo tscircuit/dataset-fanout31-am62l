@@ -1,6 +1,6 @@
 import { FanoutSolver } from "@tscircuit/fanout-solver"
 import { GenericSolverDebugger } from "@tscircuit/solver-utils/react"
-import { useMemo } from "react"
+import { useEffect, useState } from "react"
 import type { Am62lFanoutSample } from "./create-am62l-fanout-sample"
 import type { MajorityDirection } from "./fanout-directions"
 
@@ -14,9 +14,51 @@ const directionColors: Record<MajorityDirection, string> = {
 export function Am62lFanoutDebugger({
   createSample,
 }: {
-  createSample: () => Am62lFanoutSample
+  createSample: () => Promise<Am62lFanoutSample>
 }) {
-  const sample = useMemo(createSample, [createSample])
+  const [sample, setSample] = useState<Am62lFanoutSample>()
+  const [loadError, setLoadError] = useState<string>()
+
+  useEffect(() => {
+    let isCurrent = true
+    setSample(undefined)
+    setLoadError(undefined)
+    createSample().then(
+      (nextSample) => {
+        if (isCurrent) setSample(nextSample)
+      },
+      (error) => {
+        if (isCurrent) {
+          setLoadError(error instanceof Error ? error.message : String(error))
+        }
+      },
+    )
+    return () => {
+      isCurrent = false
+    }
+  }, [createSample])
+
+  if (!sample) {
+    return (
+      <div
+        style={{
+          alignItems: "center",
+          background: "#f8fafc",
+          color: loadError ? "#b91c1c" : "#475569",
+          display: "flex",
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          justifyContent: "center",
+          minHeight: "100vh",
+          padding: 24,
+        }}
+      >
+        {loadError
+          ? `Could not build the core-generated fanout fixture: ${loadError}`
+          : "Running core's breakout winding solver…"}
+      </div>
+    )
+  }
+
   const directionColor = directionColors[sample.directionCase.majorityDirection]
 
   return (

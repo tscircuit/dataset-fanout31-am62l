@@ -9,5 +9,4 @@ export default function LeftTopOffsetCircuit() {
   return <Am62lFanoutCircuit exitPosition={exitPosition} />
 }
 
-export const createSample = () =>
-  createAm62lFanoutSample(exitPosition, <LeftTopOffsetCircuit />)
+export const createSample = () => createAm62lFanoutSample(exitPosition)

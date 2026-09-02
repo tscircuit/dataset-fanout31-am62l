@@ -27,8 +27,15 @@ differential pairs, GND/VDDS_DDR plane drops, and plane-drop directions are
 copied from the fixture behind
 `tscircuit/core/tests/repros/repro-am62l-lpddr4-progressive-fanout.test.tsx`.
 The two DMI buses come from the RAM-above variant of that same fixture, making
-this dataset a superset of its default seven-signal-bus test. Each case is
-displayed through `GenericSolverDebugger` in the exported React Cosmos site.
+this dataset a superset of its default seven-signal-bus test.
+
+The TSX does not specify breakout-point coordinates. Each signal connects the
+AM62L to the core fixture's 200-ball LPDDR4 footprint through paired
+`<breakout>` groups. Core's implicit winding solver places both sets of
+`AutoplacedBreakoutPoint`s from the requested `busFanoutDirections`; the
+dataset captures the exact `FanoutSolver` constructor arguments emitted after
+that winding pass. Each case is displayed through `GenericSolverDebugger` in
+the exported React Cosmos site.
 
 ## Development
 

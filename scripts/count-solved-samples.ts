@@ -13,7 +13,7 @@ interface SolveResult {
   error?: string
 }
 
-const solveOneSample = (exitPosition: string): SolveResult => {
+const solveOneSample = async (exitPosition: string): Promise<SolveResult> => {
   const directionCase = FANOUT_DIRECTION_CASES.find(
     (candidate) => candidate.exitPosition === exitPosition,
   )
@@ -24,7 +24,7 @@ const solveOneSample = (exitPosition: string): SolveResult => {
   if (!sampleDefinition) {
     throw new Error(`Missing TSX sample module for ${exitPosition}`)
   }
-  const sample = sampleDefinition.createSample()
+  const sample = await sampleDefinition.createSample()
   const solver = new FanoutSolver(sample.simpleRouteJson, sample.solverOptions)
   const startedAt = performance.now()
   solver.solve()
@@ -44,7 +44,7 @@ if (sampleFlagIndex !== -1) {
   const exitPosition = process.argv[sampleFlagIndex + 1]
   if (!exitPosition) throw new Error(`${SAMPLE_FLAG} requires an exit position`)
   try {
-    console.log(JSON.stringify(solveOneSample(exitPosition)))
+    console.log(JSON.stringify(await solveOneSample(exitPosition)))
   } catch (error) {
     console.log(
       JSON.stringify({

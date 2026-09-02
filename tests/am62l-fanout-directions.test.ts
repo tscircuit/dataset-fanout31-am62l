@@ -4,8 +4,8 @@ import { AM62L_SIGNAL_BUSES } from "lib/am62l-buses"
 import {
   COMPLETE_BUS_COUNT,
   COMPLETE_CONNECTION_COUNT,
+  COMPLETE_OBSTACLE_COUNT,
   PLANE_DROP_COUNT,
-  SHARED_BOUNDARY,
   SIGNAL_CONNECTION_COUNT,
 } from "lib/create-am62l-fanout-sample"
 import { FANOUT_DIRECTION_CASES } from "lib/fanout-directions"
@@ -18,7 +18,7 @@ const EDGE_PREFIX = {
   left: "leftside_",
 } as const
 
-test("all 12 cases contain every AM62L signal and plane bus from core", () => {
+test("all 12 cases use core-generated breakout exits for every AM62L bus", async () => {
   expect(FANOUT_DIRECTION_CASES).toHaveLength(12)
   expect(AM62L_SAMPLE_DEFINITIONS).toHaveLength(12)
   expect(AM62L_SAMPLE_DEFINITIONS.map((sample) => sample.exitPosition)).toEqual(
@@ -37,14 +37,18 @@ test("all 12 cases contain every AM62L signal and plane bus from core", () => {
   ])
 
   for (const sampleDefinition of AM62L_SAMPLE_DEFINITIONS) {
-    const sample = sampleDefinition.createSample()
+    const sample = await sampleDefinition.createSample()
     const directionCase = sample.directionCase
     const buses = sample.solverOptions.buses ?? []
+    const sharedBoundary = sample.solverOptions.sharedBoundary
+    if (!sharedBoundary) throw new Error("Missing core-generated boundary")
     const planeBuses = buses.filter((bus) => bus.termination?.type === "plane")
     const signalBuses = buses.filter((bus) => bus.termination?.type !== "plane")
 
     expect(sample.simpleRouteJson.layerCount).toBe(8)
-    expect(sample.simpleRouteJson.obstacles).toHaveLength(373)
+    expect(sample.simpleRouteJson.obstacles).toHaveLength(
+      COMPLETE_OBSTACLE_COUNT,
+    )
     expect(sample.simpleRouteJson.connections).toHaveLength(
       COMPLETE_CONNECTION_COUNT,
     )
@@ -111,18 +115,26 @@ test("all 12 cases contain every AM62L signal and plane bus from core", () => {
           (candidate) => candidate.name === connectionName,
         )
         expect(connection?.pointsToConnect).toHaveLength(2)
+        expect(
+          connection?.pointsToConnect.every(
+            (point) =>
+              !(point as { port_selector?: string }).port_selector?.startsWith(
+                "J1.",
+              ),
+          ),
+        ).toBe(true)
         switch (directionCase.exitEdge) {
           case "top":
-            expect(target.y).toBeCloseTo(SHARED_BOUNDARY.maxY)
+            expect(target.y).toBeGreaterThan(sharedBoundary.maxY)
             break
           case "right":
-            expect(target.x).toBeCloseTo(SHARED_BOUNDARY.maxX)
+            expect(target.x).toBeGreaterThan(sharedBoundary.maxX)
             break
           case "bottom":
-            expect(target.y).toBeCloseTo(SHARED_BOUNDARY.minY)
+            expect(target.y).toBeLessThan(sharedBoundary.minY)
             break
           case "left":
-            expect(target.x).toBeCloseTo(SHARED_BOUNDARY.minX)
+            expect(target.x).toBeLessThan(sharedBoundary.minX)
             break
         }
       }

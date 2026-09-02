@@ -14,6 +14,9 @@ export type DdrBusName =
 
 export interface Am62lSignalConnection {
   busName: DdrBusName
+  memoryBall: string
+  memoryPinNumber: number
+  memorySignal: string
   socBall: string
   socPinNumber: number
   socSignal: string
@@ -24,69 +27,93 @@ export interface Am62lSignalConnection {
 // connections come from the RAM-above form of the same progressive fixture,
 // making this dataset a superset of the seven-bus default repro.
 const DDR_PIN_ASSIGNMENTS = [
-  [0, 94, "F4"],
-  [1, 93, "F3"],
-  [2, 91, "F1"],
-  [3, 76, "E1"],
-  [4, 105, "G4"],
-  [5, 123, "H4"],
-  [6, 121, "H2"],
-  [7, 122, "H3"],
-  [8, 275, "V4"],
-  [9, 238, "T3"],
-  [10, 236, "T1"],
-  [11, 255, "U1"],
-  [12, 257, "U4"],
-  [13, 276, "V5"],
-  [14, 256, "U2"],
-  [15, 284, "W1"],
+  [0, 94, "F4", 12, "B2"],
+  [1, 93, "F3", 22, "C2"],
+  [2, 91, "F1", 42, "E2"],
+  [3, 76, "E1", 52, "F2"],
+  [4, 105, "G4", 54, "F4"],
+  [5, 123, "H4", 44, "E4"],
+  [6, 121, "H2", 24, "C4"],
+  [7, 122, "H3", 14, "B4"],
+  [8, 275, "V4", 19, "B11"],
+  [9, 238, "T3", 29, "C11"],
+  [10, 236, "T1", 49, "E11"],
+  [11, 255, "U1", 59, "F11"],
+  [12, 257, "U4", 57, "F9"],
+  [13, 276, "V5", 47, "E9"],
+  [14, 256, "U2", 27, "C9"],
+  [15, 284, "W1", 17, "B9"],
 ] as const
 
 const DDR_CONNECTIONS: readonly Am62lSignalConnection[] =
-  DDR_PIN_ASSIGNMENTS.map(([bit, socPinNumber, socBall]) => ({
-    busName: bit < 8 ? "DDR_BYTE0" : "DDR_BYTE1",
-    socBall,
-    socPinNumber,
-    socSignal: `DDR0_DQ${bit}`,
-    traceName: `DQ${bit}`,
-  }))
+  DDR_PIN_ASSIGNMENTS.map(
+    ([bit, socPinNumber, socBall, memoryPinNumber, memoryBall]) => ({
+      busName: bit < 8 ? "DDR_BYTE0" : "DDR_BYTE1",
+      memoryBall,
+      memoryPinNumber,
+      memorySignal: `DQ${bit}`,
+      socBall,
+      socPinNumber,
+      socSignal: `DDR0_DQ${bit}`,
+      traceName: `DQ${bit}`,
+    }),
+  )
 
 const createConnections = (
   busName: DdrBusName,
-  assignments: readonly (readonly [string, string, number, string])[],
+  assignments: readonly (readonly [
+    string,
+    string,
+    number,
+    string,
+    number,
+    string,
+  ])[],
 ): readonly Am62lSignalConnection[] =>
-  assignments.map(([traceName, socSignal, socPinNumber, socBall]) => ({
-    busName,
-    socBall,
-    socPinNumber,
-    socSignal,
-    traceName,
-  }))
+  assignments.map(
+    ([
+      traceName,
+      socSignal,
+      socPinNumber,
+      socBall,
+      memoryPinNumber,
+      memoryBall,
+    ]) => ({
+      busName,
+      memoryBall,
+      memoryPinNumber,
+      memorySignal: traceName,
+      socBall,
+      socPinNumber,
+      socSignal,
+      traceName,
+    }),
+  )
 
 const DDR_ADDR_CTRL_CONNECTIONS = createConnections("DDR_ADDR_CTRL", [
-  ["CA0", "DDR0_A0", 164, "L5"],
-  ["CA1", "DDR0_A1", 125, "H6"],
-  ["CA2", "DDR0_A2", 165, "L6"],
-  ["CA3", "DDR0_A3", 150, "K2"],
-  ["CA4", "DDR0_A4", 139, "J1"],
-  ["CA5", "DDR0_A5", 124, "H5"],
-  ["CS", "DDR0_CS0_n", 162, "L3"],
-  ["CKE", "DDR0_CKE0", 149, "K1"],
+  ["CA0", "DDR0_A0", 164, "L5", 72, "H2"],
+  ["CA1", "DDR0_A1", 125, "H6", 82, "J2"],
+  ["CA2", "DDR0_A2", 165, "L6", 77, "H9"],
+  ["CA3", "DDR0_A3", 150, "K2", 78, "H10"],
+  ["CA4", "DDR0_A4", 139, "J1", 79, "H11"],
+  ["CA5", "DDR0_A5", 124, "H5", 89, "J11"],
+  ["CS", "DDR0_CS0_n", 162, "L3", 74, "H4"],
+  ["CKE", "DDR0_CKE0", 149, "K1", 84, "J4"],
 ] as const)
 
 const DDR_CLOCK_CONNECTIONS = createConnections("DDR_CLOCK", [
-  ["CK_t", "DDR0_CK0", 215, "P1"],
-  ["CK_c", "DDR0_CK0_n", 216, "P2"],
+  ["CK_t", "DDR0_CK0", 215, "P1", 86, "J8"],
+  ["CK_c", "DDR0_CK0_n", 216, "P2", 87, "J9"],
 ] as const)
 
 const DDR_DQS0_CONNECTIONS = createConnections("DDR_DQS0", [
-  ["DQS0_t", "DDR0_DQS0", 103, "G1"],
-  ["DQS0_c", "DDR0_DQS0_n", 104, "G2"],
+  ["DQS0_t", "DDR0_DQS0", 103, "G1", 33, "D3"],
+  ["DQS0_c", "DDR0_DQS0_n", 104, "G2", 43, "E3"],
 ] as const)
 
 const DDR_DQS1_CONNECTIONS = createConnections("DDR_DQS1", [
-  ["DQS1_t", "DDR0_DQS1", 272, "V1"],
-  ["DQS1_c", "DDR0_DQS1_n", 273, "V2"],
+  ["DQS1_t", "DDR0_DQS1", 272, "V1", 38, "D10"],
+  ["DQS1_c", "DDR0_DQS1_n", 273, "V2", 48, "E10"],
 ] as const)
 
 const singletonConnection = (
@@ -95,8 +122,13 @@ const singletonConnection = (
   socSignal: string,
   socPinNumber: number,
   socBall: string,
+  memoryPinNumber: number,
+  memoryBall: string,
 ): Am62lSignalConnection => ({
   busName,
+  memoryBall,
+  memoryPinNumber,
+  memorySignal: traceName,
   socBall,
   socPinNumber,
   socSignal,
@@ -109,9 +141,17 @@ export const AM62L_SIGNAL_CONNECTIONS = [
   ...DDR_CLOCK_CONNECTIONS,
   ...DDR_DQS0_CONNECTIONS,
   ...DDR_DQS1_CONNECTIONS,
-  singletonConnection("DDR_RESET", "RESET_n", "DDR0_RESET0_n", 140, "J2"),
-  singletonConnection("DDR_DMI0", "DMI0", "DDR0_DM0", 92, "F2"),
-  singletonConnection("DDR_DMI1", "DMI1", "DDR0_DM1", 285, "W2"),
+  singletonConnection(
+    "DDR_RESET",
+    "RESET_n",
+    "DDR0_RESET0_n",
+    140,
+    "J2",
+    139,
+    "T11",
+  ),
+  singletonConnection("DDR_DMI0", "DMI0", "DDR0_DM0", 92, "F2", 23, "C3"),
+  singletonConnection("DDR_DMI1", "DMI1", "DDR0_DM1", 285, "W2", 28, "C10"),
 ] as const satisfies readonly Am62lSignalConnection[]
 
 export type BusBand = -1 | 0 | 1
