@@ -4,12 +4,12 @@ import { AM62L_SIGNAL_BUSES } from "lib/am62l-buses"
 import {
   COMPLETE_BUS_COUNT,
   COMPLETE_CONNECTION_COUNT,
-  createAm62lFanoutSample,
   PLANE_DROP_COUNT,
   SHARED_BOUNDARY,
   SIGNAL_CONNECTION_COUNT,
 } from "lib/create-am62l-fanout-sample"
 import { FANOUT_DIRECTION_CASES } from "lib/fanout-directions"
+import { AM62L_SAMPLE_DEFINITIONS } from "../samples"
 
 const EDGE_PREFIX = {
   top: "topside_",
@@ -20,6 +20,10 @@ const EDGE_PREFIX = {
 
 test("all 12 cases contain every AM62L signal and plane bus from core", () => {
   expect(FANOUT_DIRECTION_CASES).toHaveLength(12)
+  expect(AM62L_SAMPLE_DEFINITIONS).toHaveLength(12)
+  expect(AM62L_SAMPLE_DEFINITIONS.map((sample) => sample.exitPosition)).toEqual(
+    FANOUT_DIRECTION_CASES.map((sample) => sample.exitPosition),
+  )
   expect(AM62L_SIGNAL_BUSES.map((bus) => bus.name)).toEqual([
     "DDR_BYTE0",
     "DDR_BYTE1",
@@ -32,8 +36,9 @@ test("all 12 cases contain every AM62L signal and plane bus from core", () => {
     "DDR_DMI1",
   ])
 
-  for (const directionCase of FANOUT_DIRECTION_CASES) {
-    const sample = createAm62lFanoutSample(directionCase.exitPosition)
+  for (const sampleDefinition of AM62L_SAMPLE_DEFINITIONS) {
+    const sample = sampleDefinition.createSample()
+    const directionCase = sample.directionCase
     const buses = sample.solverOptions.buses ?? []
     const planeBuses = buses.filter((bus) => bus.termination?.type === "plane")
     const signalBuses = buses.filter((bus) => bus.termination?.type !== "plane")

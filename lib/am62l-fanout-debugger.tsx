@@ -1,11 +1,8 @@
 import { FanoutSolver } from "@tscircuit/fanout-solver"
 import { GenericSolverDebugger } from "@tscircuit/solver-utils/react"
-import { createAm62lFanoutSample } from "lib/create-am62l-fanout-sample"
-import {
-  FANOUT_DIRECTION_CASES,
-  type MajorityDirection,
-} from "lib/fanout-directions"
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
+import type { Am62lFanoutSample } from "./create-am62l-fanout-sample"
+import type { MajorityDirection } from "./fanout-directions"
 
 const directionColors: Record<MajorityDirection, string> = {
   up: "#2563eb",
@@ -14,14 +11,13 @@ const directionColors: Record<MajorityDirection, string> = {
   left: "#059669",
 }
 
-export default function Am62lFanoutDirectionsPage() {
-  const [selectedCaseIndex, setSelectedCaseIndex] = useState(0)
-  const selectedCase =
-    FANOUT_DIRECTION_CASES[selectedCaseIndex] ?? FANOUT_DIRECTION_CASES[0]
-  const sample = useMemo(
-    () => createAm62lFanoutSample(selectedCase.exitPosition),
-    [selectedCase.exitPosition],
-  )
+export function Am62lFanoutDebugger({
+  createSample,
+}: {
+  createSample: () => Am62lFanoutSample
+}) {
+  const sample = useMemo(createSample, [createSample])
+  const directionColor = directionColors[sample.directionCase.majorityDirection]
 
   return (
     <div
@@ -42,43 +38,18 @@ export default function Am62lFanoutDirectionsPage() {
         }}
       >
         <div>
-          <strong>Dataset Fanout31 · AM62L directional exits</strong>
+          <strong>
+            Dataset Fanout31 · {sample.id} · {sample.name}
+          </strong>
           <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>
             373-ball AM62L32BOGHAANBR · 135 connections · 111 buses · 8 layers
           </div>
         </div>
 
         <div style={{ color: "#475569", fontSize: 13 }}>
-          Every case is generated from TSX using the complete tscircuit/core
-          progressive-fanout workload: all 33 DDR signals in nine buses, three
-          differential pairs, and 102 GND/VDDS_DDR plane drops. The signal buses
-          share one majority side while retaining their offset bands.
-        </div>
-
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {FANOUT_DIRECTION_CASES.map((directionCase, caseIndex) => {
-            const selected = caseIndex === selectedCaseIndex
-            const color = directionColors[directionCase.majorityDirection]
-            return (
-              <button
-                key={directionCase.exitPosition}
-                type="button"
-                onClick={() => setSelectedCaseIndex(caseIndex)}
-                style={{
-                  background: selected ? color : "#ffffff",
-                  border: `1px solid ${selected ? color : "#cbd5e1"}`,
-                  borderRadius: 999,
-                  color: selected ? "#ffffff" : "#334155",
-                  cursor: "pointer",
-                  fontSize: 12,
-                  fontWeight: selected ? 700 : 500,
-                  padding: "6px 10px",
-                }}
-              >
-                {directionCase.name}
-              </button>
-            )
-          })}
+          Complete tscircuit/core progressive-fanout workload: all 33 DDR
+          signals in nine buses, three differential pairs, and 102 GND/VDDS_DDR
+          plane drops.
         </div>
 
         <div
@@ -92,7 +63,7 @@ export default function Am62lFanoutDirectionsPage() {
         >
           <span
             style={{
-              background: directionColors[selectedCase.majorityDirection],
+              background: directionColor,
               borderRadius: 999,
               color: "#ffffff",
               fontWeight: 700,
@@ -100,9 +71,9 @@ export default function Am62lFanoutDirectionsPage() {
               textTransform: "uppercase",
             }}
           >
-            majority {selectedCase.majorityDirection}
+            majority {sample.directionCase.majorityDirection}
           </span>
-          <code>{selectedCase.exitPosition}</code>
+          <code>{sample.directionCase.exitPosition}</code>
           <span style={{ color: "#475569" }}>{sample.description}</span>
         </div>
 
@@ -129,7 +100,6 @@ export default function Am62lFanoutDirectionsPage() {
       </header>
 
       <GenericSolverDebugger
-        key={sample.id}
         createSolver={() =>
           new FanoutSolver(sample.simpleRouteJson, sample.solverOptions)
         }

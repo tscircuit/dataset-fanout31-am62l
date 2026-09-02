@@ -5,7 +5,7 @@ import type {
   FanoutSolver,
   FanoutSolverOptions,
 } from "@tscircuit/fanout-solver"
-import { Fragment } from "react"
+import { Fragment, type ReactElement } from "react"
 import {
   AM62L_DIFFERENTIAL_PAIRS,
   AM62L_PLANE_DROPS,
@@ -182,33 +182,29 @@ const getPlaneDummyTarget = (connectionIndex: number) => ({
   y: -10 + Math.floor(connectionIndex / 17) * 0.35,
 })
 
-function getRequiredRenderedBus(
-  simpleRouteJson: FanoutSimpleRouteJson,
-  busId: string,
-) {
-  const bus = simpleRouteJson.buses?.find(
-    (candidate) => candidate.busId === busId,
-  )
-  if (!bus) throw new Error(`The TSX circuit did not emit bus ${busId}`)
-  return bus
-}
+const ORDERED_TRACE_CONNECTIONS = [
+  ...AM62L_PLANE_DROPS.map((drop) => ({
+    pinNumber: drop.pinNumber,
+    traceName: drop.traceName,
+  })),
+  ...AM62L_SIGNAL_CONNECTIONS.map((connection) => ({
+    pinNumber: connection.socPinNumber,
+    traceName: connection.traceName,
+  })),
+]
 
-function getSourceComponentId(simpleRouteJson: FanoutSimpleRouteJson): string {
-  const sourceObstacle = simpleRouteJson.obstacles.find(
-    (obstacle) =>
-      obstacle.componentId !== undefined &&
-      Math.abs(obstacle.center.x) <= 5.5 &&
-      Math.abs(obstacle.center.y) <= 5.5,
-  )
-  if (!sourceObstacle?.componentId) {
-    throw new Error("Unable to identify the TSX-generated AM62L component")
-  }
-  return sourceObstacle.componentId
-}
+const TARGET_PIN_NUMBER_BY_TRACE_NAME = new Map(
+  ORDERED_TRACE_CONNECTIONS.map((connection, connectionIndex) => [
+    connection.traceName,
+    connectionIndex + 1,
+  ]),
+)
 
-export function createAm62lFanoutSample(
-  exitPosition: BoundaryExitPosition,
-): Am62lFanoutSample {
+export function Am62lFanoutCircuit({
+  exitPosition,
+}: {
+  exitPosition: BoundaryExitPosition
+}) {
   const directionCase = getFanoutDirectionCase(exitPosition)
   const signalTargets = createSignalTargets(directionCase)
   const planeTargetByTraceName = new Map(
@@ -223,25 +219,8 @@ export function createAm62lFanoutSample(
       ([traceName, target]) => [traceName, target] as const,
     ),
   ])
-  const orderedTraceConnections = [
-    ...AM62L_PLANE_DROPS.map((drop) => ({
-      pinNumber: drop.pinNumber,
-      traceName: drop.traceName,
-    })),
-    ...AM62L_SIGNAL_CONNECTIONS.map((connection) => ({
-      pinNumber: connection.socPinNumber,
-      traceName: connection.traceName,
-    })),
-  ]
-  const targetPinNumberByTraceName = new Map(
-    orderedTraceConnections.map((connection, connectionIndex) => [
-      connection.traceName,
-      connectionIndex + 1,
-    ]),
-  )
-  const circuit = new RootCircuit()
 
-  circuit.add(
+  return (
     <board
       width="40mm"
       height="40mm"
@@ -293,7 +272,7 @@ export function createAm62lFanoutSample(
         pcbY={0}
         footprint={
           <footprint>
-            {orderedTraceConnections.map((connection, connectionIndex) => {
+            {ORDERED_TRACE_CONNECTIONS.map((connection, connectionIndex) => {
               const target = targetByTraceName.get(connection.traceName)
               if (!target) {
                 throw new Error(`Missing target for ${connection.traceName}`)
@@ -313,8 +292,8 @@ export function createAm62lFanoutSample(
           </footprint>
         }
       />
-      {orderedTraceConnections.map((connection) => {
-        const targetPinNumber = targetPinNumberByTraceName.get(
+      {ORDERED_TRACE_CONNECTIONS.map((connection) => {
+        const targetPinNumber = TARGET_PIN_NUMBER_BY_TRACE_NAME.get(
           connection.traceName,
         )
         if (!targetPinNumber) {
@@ -336,7 +315,43 @@ export function createAm62lFanoutSample(
         fontSize={0.7}
         text={`AM62L · ${directionCase.name} · 135 connections`}
       />
-    </board>,
+    </board>
+  )
+}
+
+function getRequiredRenderedBus(
+  simpleRouteJson: FanoutSimpleRouteJson,
+  busId: string,
+) {
+  const bus = simpleRouteJson.buses?.find(
+    (candidate) => candidate.busId === busId,
+  )
+  if (!bus) throw new Error(`The TSX circuit did not emit bus ${busId}`)
+  return bus
+}
+
+function getSourceComponentId(simpleRouteJson: FanoutSimpleRouteJson): string {
+  const sourceObstacle = simpleRouteJson.obstacles.find(
+    (obstacle) =>
+      obstacle.componentId !== undefined &&
+      Math.abs(obstacle.center.x) <= 5.5 &&
+      Math.abs(obstacle.center.y) <= 5.5,
+  )
+  if (!sourceObstacle?.componentId) {
+    throw new Error("Unable to identify the TSX-generated AM62L component")
+  }
+  return sourceObstacle.componentId
+}
+
+export function createAm62lFanoutSample(
+  exitPosition: BoundaryExitPosition,
+  circuitElement?: ReactElement,
+): Am62lFanoutSample {
+  const directionCase = getFanoutDirectionCase(exitPosition)
+  const signalTargets = createSignalTargets(directionCase)
+  const circuit = new RootCircuit()
+  circuit.add(
+    circuitElement ?? <Am62lFanoutCircuit exitPosition={exitPosition} />,
   )
   circuit.render()
   const board = circuit.firstChild

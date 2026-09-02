@@ -12,6 +12,7 @@
     "build": "bunx tsc --noEmit",
     "typecheck": "bunx tsc --noEmit",
     "test": "bun test",
+    "solve-count": "bun scripts/count-solved-samples.ts",
     "format": "biome format --write .",
     "format:check": "biome format ."
   },

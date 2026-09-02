@@ -1,4 +1,5 @@
 export * from "./am62l-footprint"
 export * from "./am62l-buses"
+export * from "./am62l-fanout-debugger"
 export * from "./create-am62l-fanout-sample"
 export * from "./fanout-directions"
