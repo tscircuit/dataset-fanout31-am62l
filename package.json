@@ -19,7 +19,7 @@
     "@tscircuit/capacity-autorouter": "0.0.864",
     "@tscircuit/copper-pour-solver": "0.0.51",
     "@tscircuit/core": "0.0.1819",
-    "@tscircuit/fanout-solver": "0.0.47",
+    "@tscircuit/fanout-solver": "0.0.49",
     "@tscircuit/infer-cable-insertion-point": "0.0.4",
     "@tscircuit/miniflex": "0.0.4",
     "@tscircuit/schematic-trace-solver": "0.0.175",
