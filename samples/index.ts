@@ -1,4 +1,5 @@
 import { getFanoutDirectionCase } from "../lib/fanout-directions"
+import { getK230FanoutDirectionCase } from "../lib/k230-fanout-directions"
 import { getRk3308FanoutDirectionCase } from "../lib/rk3308-fanout-directions"
 import {
   createSample as create01TopLeftOffset,
@@ -96,6 +97,54 @@ import {
   createSample as create24Rk3308LeftTopOffset,
   exitPosition as exitPosition24,
 } from "./24-rk3308-left-top-offset"
+import {
+  createSample as create25K230TopLeftOffset,
+  exitPosition as exitPosition25,
+} from "./25-k230-top-left-offset"
+import {
+  createSample as create26K230TopCenter,
+  exitPosition as exitPosition26,
+} from "./26-k230-top-center"
+import {
+  createSample as create27K230TopRightOffset,
+  exitPosition as exitPosition27,
+} from "./27-k230-top-right-offset"
+import {
+  createSample as create28K230RightTopOffset,
+  exitPosition as exitPosition28,
+} from "./28-k230-right-top-offset"
+import {
+  createSample as create29K230RightCenter,
+  exitPosition as exitPosition29,
+} from "./29-k230-right-center"
+import {
+  createSample as create30K230RightBottomOffset,
+  exitPosition as exitPosition30,
+} from "./30-k230-right-bottom-offset"
+import {
+  createSample as create31K230BottomRightOffset,
+  exitPosition as exitPosition31,
+} from "./31-k230-bottom-right-offset"
+import {
+  createSample as create32K230BottomCenter,
+  exitPosition as exitPosition32,
+} from "./32-k230-bottom-center"
+import {
+  createSample as create33K230BottomLeftOffset,
+  exitPosition as exitPosition33,
+} from "./33-k230-bottom-left-offset"
+import {
+  createSample as create34K230LeftBottomOffset,
+  exitPosition as exitPosition34,
+} from "./34-k230-left-bottom-offset"
+import {
+  createSample as create35K230LeftCenter,
+  exitPosition as exitPosition35,
+} from "./35-k230-left-center"
+import {
+  createSample as create36K230LeftTopOffset,
+  exitPosition as exitPosition36,
+} from "./36-k230-left-top-offset"
 
 export const AM62L_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition01, createSample: create01TopLeftOffset },
@@ -139,6 +188,21 @@ export const RK3308_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition24, createSample: create24Rk3308LeftTopOffset },
 ] as const
 
+export const K230_SAMPLE_DEFINITIONS = [
+  { exitPosition: exitPosition25, createSample: create25K230TopLeftOffset },
+  { exitPosition: exitPosition26, createSample: create26K230TopCenter },
+  { exitPosition: exitPosition27, createSample: create27K230TopRightOffset },
+  { exitPosition: exitPosition28, createSample: create28K230RightTopOffset },
+  { exitPosition: exitPosition29, createSample: create29K230RightCenter },
+  { exitPosition: exitPosition30, createSample: create30K230RightBottomOffset },
+  { exitPosition: exitPosition31, createSample: create31K230BottomRightOffset },
+  { exitPosition: exitPosition32, createSample: create32K230BottomCenter },
+  { exitPosition: exitPosition33, createSample: create33K230BottomLeftOffset },
+  { exitPosition: exitPosition34, createSample: create34K230LeftBottomOffset },
+  { exitPosition: exitPosition35, createSample: create35K230LeftCenter },
+  { exitPosition: exitPosition36, createSample: create36K230LeftTopOffset },
+] as const
+
 export const FANOUT_SAMPLE_DEFINITIONS = [
   ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
     ...definition,
@@ -149,6 +213,11 @@ export const FANOUT_SAMPLE_DEFINITIONS = [
     ...definition,
     id: getRk3308FanoutDirectionCase(definition.exitPosition).id,
     chip: "rk3308" as const,
+  })),
+  ...K230_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getK230FanoutDirectionCase(definition.exitPosition).id,
+    chip: "k230" as const,
   })),
 ] as const
 
