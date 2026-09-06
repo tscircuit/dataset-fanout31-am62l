@@ -1,13 +1,13 @@
 import { expect, test } from "bun:test"
 import { selectSamples } from "../scripts/count-solved-samples"
 
-test("solve-count selects both chip families without changing legacy sample selectors", () => {
+test("solve-count selects all three chip families without changing legacy sample selectors", () => {
   const all = selectSamples([])
-  expect(all.samples).toHaveLength(24)
+  expect(all.samples).toHaveLength(36)
   expect(all.singleSample).toBe(false)
-  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(24)
+  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(36)
 
-  for (const chip of ["am62l", "rk3308"] as const) {
+  for (const chip of ["am62l", "rk3308", "k230"] as const) {
     const family = selectSamples(["--chip", chip])
     expect(family.samples).toHaveLength(12)
     expect(family.samples.every((sample) => sample.chip === chip)).toBe(true)
@@ -37,6 +37,20 @@ test("solve-count selects both chip families without changing legacy sample sele
       (sample) => sample.id,
     ),
   ).toEqual(["12-left-top-offset"])
+
+  expect(
+    selectSamples(["--chip", "k230", "--sample", "topside_left"]).samples.map(
+      (sample) => sample.id,
+    ),
+  ).toEqual(["25-k230-top-left-offset"])
+  expect(
+    selectSamples(["--sample", "36-k230-left-top-offset"]).samples.map(
+      (sample) => sample.id,
+    ),
+  ).toEqual(["36-k230-left-top-offset"])
+  expect(() =>
+    selectSamples(["--chip", "rk3308", "--sample", "25-k230-top-left-offset"]),
+  ).toThrow("does not belong to chip rk3308")
 
   expect(() =>
     selectSamples(["--chip", "all", "--sample", "topside_left"]),

@@ -7,12 +7,12 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 60_000
 
-export const SOLVE_COUNT_HELP = `Usage: bun run solve-count [--chip am62l|rk3308|all] [--sample ID|EXIT]
+export const SOLVE_COUNT_HELP = `Usage: bun run solve-count [--chip am62l|rk3308|k230|all] [--sample ID|EXIT]
 
 With no arguments, solve all ${FANOUT_SAMPLE_DEFINITIONS.length} samples. --chip selects one chip family.
 --sample selects a unique ID, such as 13-rk3308-top-left-offset.
 Legacy exit names, such as topside_left, default to AM62L unless --chip
-selects rk3308. Use a unique ID when combining --sample with --chip all.
+selects rk3308 or k230. Use a unique ID when combining --sample with --chip all.
 Single-sample results are emitted as JSON.
 
 FANOUT_SAMPLE_TIMEOUT_MS sets the per-sample timeout for a full-family run
@@ -48,8 +48,15 @@ export function selectSamples(args: readonly string[]): {
     if (argument === "--chip") {
       if (chip !== undefined)
         throw new Error("--chip may only be specified once")
-      if (value !== "am62l" && value !== "rk3308" && value !== "all") {
-        throw new Error(`Unknown chip ${value}; expected am62l, rk3308, or all`)
+      if (
+        value !== "am62l" &&
+        value !== "rk3308" &&
+        value !== "k230" &&
+        value !== "all"
+      ) {
+        throw new Error(
+          `Unknown chip ${value}; expected am62l, rk3308, k230, or all`,
+        )
       }
       chip = value
     } else {
@@ -91,7 +98,7 @@ export function selectSamples(args: readonly string[]): {
   )
   if (samples.length > 1) {
     throw new Error(
-      `Exit ${sampleSelector} matches multiple chips; use a sample ID or select --chip am62l|rk3308`,
+      `Exit ${sampleSelector} matches multiple chips; use a sample ID or select --chip am62l|rk3308|k230`,
     )
   }
   if (samples.length === 0) {
@@ -205,7 +212,7 @@ export async function main(args = process.argv.slice(2)) {
 
   const solvedCount = results.filter((result) => result.solved).length
   const chipNames = [...new Set(samples.map((definition) => definition.chip))]
-    .map((chip) => (chip === "am62l" ? "AM62L" : "RK3308"))
+    .map((chip) => chip.toUpperCase())
     .join(" and ")
   console.log(
     `\nSolved ${solvedCount}/${results.length} complete ${chipNames} problems.`,

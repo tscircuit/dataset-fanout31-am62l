@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1248" height="1706" viewBox="0 0 1248 1706" role="img" aria-labelledby="title description">
+<title id="title">Twelve K230 to dual x16 LPDDR4 placements</title>
+<desc id="description">The 390-ball Canaan K230 stays fixed. Two 200-ball Micron x16 memories move together to each of four sides and three offsets. All 790 physical pads are shown. Orange pads carry 65 SoC signals and 33 signals on each RAM, including shared reset. Placement preview only; routes are not shown.</desc>
+<style>
+text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#24394d}
+.title{font-size:26px;font-weight:700}.subtitle{font-size:14px;fill:#526b80}.caption{font-size:13px;fill:#526b80}
+.panel{fill:#fff;stroke:#d9e3eb}.panel-title{font-size:15px;font-weight:600}.chip-label{font-size:10px;fill:#426178;text-anchor:middle}
+.board{fill:#f7fafc;stroke:#e4edf3;stroke-width:.15}.package{fill:#e9f0f5;stroke:#49657b;stroke-width:.15}
+.pads{fill:#8195a6}.signal{fill:#e66c19}.pin-one{fill:none;stroke:#49657b;stroke-width:.15}
+</style>
+<defs>
+<g id="soc"><rect x="-6.5" y="-6.5" width="13" height="13" class="package"/>
+<path d="M-6.5 5.3V6.5H-5.3" class="pin-one"/><g class="pads"><circle cx="-5.525" cy="6.175" r="0.15"/><circle cx="-4.875" cy="6.175" r="0.15"/><circle cx="-4.225" cy="6.175" r="0.15"/><circle cx="-3.575" cy="6.175" r="0.15"/><circle cx="-2.925" cy="6.175" r="0.15"/><circle cx="-2.275" cy="6.175" r="0.15"/><circle cx="-1.625" cy="6.175" r="0.15"/><circle cx="-0.975" cy="6.175" r="0.15"/><circle cx="-0.325" cy="6.175" r="0.15"/><circle cx="0.325" cy="6.175" r="0.15"/><circle cx="0.975" cy="6.175" r="0.15"/><circle cx="1.625" cy="6.175" r="0.15"/><circle cx="2.275" cy="6.175" r="0.15" class="signal"/><circle cx="2.925" cy="6.175" r="0.15" class="signal"/><circle cx="3.575" cy="6.175" r="0.15"/><circle cx="4.225" cy="6.175" r="0.15" class="signal"/><circle cx="4.875" cy="6.175" r="0.15" class="signal"/><circle cx="5.525" cy="6.175" r="0.15"/><circle cx="6.175" cy="6.175" r="0.15"/><circle cx="-6.175" cy="5.525" r="0.15"/><circle cx="-5.525" cy="5.525" r="0.15"/><circle cx="-4.875" cy="5.525" r="0.15"/><circle cx="-4.225" cy="5.525" r="0.15"/><circle cx="-3.575" cy="5.525" r="0.15"/><circle cx="-2.925" cy="5.525" r="0.15"/><circle cx="-2.275" cy="5.525" r="0.15"/><circle cx="-1.625" cy="5.525" r="0.15"/><circle cx="-0.975" cy="5.525" r="0.15"/><circle cx="-0.325" cy="5.525" r="0.15"/><circle cx="0.325" cy="5.525" r="0.15"/><circle cx="0.975" cy="5.525" r="0.15"/><circle cx="1.625" cy="5.525" r="0.15"/><circle cx="2.275" cy="5.525" r="0.15" class="signal"/><circle cx="2.925" cy="5.525" r="0.15" class="signal"/><circle cx="3.575" cy="5.525" r="0.15" class="signal"/><circle cx="4.225" cy="5.525" r="0.15" class="signal"/><circle cx="4.875" cy="5.525" r="0.15" class="signal"/><circle cx="5.525" cy="5.525" r="0.15" class="signal"/><circle cx="6.175" cy="5.525" r="0.15"/><circle cx="-6.175" cy="4.875" r="0.15"/><circle cx="-5.525" cy="4.875" r="0.15"/><circle cx="-4.875" cy="4.875" r="0.15"/><circle cx="-4.225" cy="4.875" r="0.15"/><circle cx="-3.575" cy="4.875" r="0.15"/><circle cx="-2.925" cy="4.875" r="0.15"/><circle cx="-2.275" cy="4.875" r="0.15"/><circle cx="-1.625" cy="4.875" r="0.15"/><circle cx="-0.975" cy="4.875" r="0.15"/><circle cx="-0.325" cy="4.875" r="0.15"/><circle cx="0.325" cy="4.875" r="0.15"/><circle cx="0.975" cy="4.875" r="0.15"/><circle cx="1.625" cy="4.875" r="0.15"/><circle cx="2.275" cy="4.875" r="0.15" class="signal"/><circle cx="2.925" cy="4.875" r="0.15" class="signal"/><circle cx="3.575" cy="4.875" r="0.15" class="signal"/><circle cx="4.225" cy="4.875" r="0.15" class="signal"/><circle cx="4.875" cy="4.875" r="0.15" class="signal"/><circle cx="5.525" cy="4.875" r="0.15" class="signal"/><circle cx="6.175" cy="4.875" r="0.15"/><circle cx="-6.175" cy="4.225" r="0.15"/><circle cx="-5.525" cy="4.225" r="0.15"/><circle cx="-4.875" cy="4.225" r="0.15"/><circle cx="-4.225" cy="4.225" r="0.15"/><circle cx="-3.575" cy="4.225" r="0.15"/><circle cx="-2.925" cy="4.225" r="0.15"/><circle cx="-2.275" cy="4.225" r="0.15"/><circle cx="-1.625" cy="4.225" r="0.15"/><circle cx="-0.975" cy="4.225" r="0.15"/><circle cx="-0.325" cy="4.225" r="0.15"/><circle cx="0.325" cy="4.225" r="0.15"/><circle cx="0.975" cy="4.225" r="0.15"/><circle cx="1.625" cy="4.225" r="0.15"/><circle cx="2.275" cy="4.225" r="0.15" class="signal"/><circle cx="2.925" cy="4.225" r="0.15"/><circle cx="3.575" cy="4.225" r="0.15" class="signal"/><circle cx="4.225" cy="4.225" r="0.15" class="signal"/><circle cx="4.875" cy="4.225" r="0.15" class="signal"/><circle cx="5.525" cy="4.225" r="0.15"/><circle cx="6.175" cy="4.225" r="0.15"/><circle cx="-6.175" cy="3.575" r="0.15"/><circle cx="-5.525" cy="3.575" r="0.15"/><circle cx="-4.875" cy="3.575" r="0.15"/><circle cx="-4.225" cy="3.575" r="0.15"/><circle cx="-2.925" cy="3.575" r="0.15"/><circle cx="-2.275" cy="3.575" r="0.15"/><circle cx="-1.625" cy="3.575" r="0.15"/><circle cx="-0.975" cy="3.575" r="0.15"/><circle cx="-0.325" cy="3.575" r="0.15"/><circle cx="0.325" cy="3.575" r="0.15"/><circle cx="0.975" cy="3.575" r="0.15"/><circle cx="1.625" cy="3.575" r="0.15"/><circle cx="2.275" cy="3.575" r="0.15"/><circle cx="2.925" cy="3.575" r="0.15"/><circle cx="3.575" cy="3.575" r="0.15"/><circle cx="4.225" cy="3.575" r="0.15" class="signal"/><circle cx="4.875" cy="3.575" r="0.15" class="signal"/><circle cx="5.525" cy="3.575" r="0.15"/><circle cx="6.175" cy="3.575" r="0.15" class="signal"/><circle cx="-6.175" cy="2.925" r="0.15"/><circle cx="-5.525" cy="2.925" r="0.15"/><circle cx="-4.875" cy="2.925" r="0.15"/><circle cx="-4.225" cy="2.925" r="0.15"/><circle cx="-2.925" cy="2.925" r="0.15"/><circle cx="-2.275" cy="2.925" r="0.15"/><circle cx="-1.625" cy="2.925" r="0.15"/><circle cx="-0.975" cy="2.925" r="0.15"/><circle cx="-0.325" cy="2.925" r="0.15"/><circle cx="0.325" cy="2.925" r="0.15"/><circle cx="0.975" cy="2.925" r="0.15"/><circle cx="1.625" cy="2.925" r="0.15"/><circle cx="2.275" cy="2.925" r="0.15"/><circle cx="2.925" cy="2.925" r="0.15"/><circle cx="3.575" cy="2.925" r="0.15"/><circle cx="4.225" cy="2.925" r="0.15" class="signal"/><circle cx="4.875" cy="2.925" r="0.15"/><circle cx="5.525" cy="2.925" r="0.15" class="signal"/><circle cx="6.175" cy="2.925" r="0.15" class="signal"/><circle cx="-6.175" cy="2.275" r="0.15"/><circle cx="-5.525" cy="2.275" r="0.15"/><circle cx="-4.875" cy="2.275" r="0.15"/><circle cx="-4.225" cy="2.275" r="0.15"/><circle cx="-3.575" cy="2.275" r="0.15"/><circle cx="-2.925" cy="2.275" r="0.15"/><circle cx="-2.275" cy="2.275" r="0.15"/><circle cx="-1.625" cy="2.275" r="0.15"/><circle cx="-0.975" cy="2.275" r="0.15"/><circle cx="-0.325" cy="2.275" r="0.15"/><circle cx="0.325" cy="2.275" r="0.15"/><circle cx="0.975" cy="2.275" r="0.15"/><circle cx="1.625" cy="2.275" r="0.15"/><circle cx="2.275" cy="2.275" r="0.15"/><circle cx="2.925" cy="2.275" r="0.15"/><circle cx="3.575" cy="2.275" r="0.15"/><circle cx="4.225" cy="2.275" r="0.15"/><circle cx="4.875" cy="2.275" r="0.15" class="signal"/><circle cx="5.525" cy="2.275" r="0.15" class="signal"/><circle cx="6.175" cy="2.275" r="0.15" class="signal"/><circle cx="-6.175" cy="1.625" r="0.15"/><circle cx="-5.525" cy="1.625" r="0.15"/><circle cx="-4.875" cy="1.625" r="0.15"/><circle cx="-4.225" cy="1.625" r="0.15"/><circle cx="-3.575" cy="1.625" r="0.15"/><circle cx="-2.925" cy="1.625" r="0.15"/><circle cx="-2.275" cy="1.625" r="0.15"/><circle cx="-1.625" cy="1.625" r="0.15"/><circle cx="-0.975" cy="1.625" r="0.15"/><circle cx="-0.325" cy="1.625" r="0.15"/><circle cx="0.325" cy="1.625" r="0.15"/><circle cx="0.975" cy="1.625" r="0.15"/><circle cx="1.625" cy="1.625" r="0.15"/><circle cx="2.275" cy="1.625" r="0.15"/><circle cx="2.925" cy="1.625" r="0.15"/><circle cx="3.575" cy="1.625" r="0.15"/><circle cx="4.225" cy="1.625" r="0.15" class="signal"/><circle cx="4.875" cy="1.625" r="0.15"/><circle cx="5.525" cy="1.625" r="0.15"/><circle cx="6.175" cy="1.625" r="0.15"/><circle cx="-6.175" cy="0.975" r="0.15"/><circle cx="-5.525" cy="0.975" r="0.15"/><circle cx="-4.875" cy="0.975" r="0.15"/><circle cx="-4.225" cy="0.975" r="0.15"/><circle cx="-3.575" cy="0.975" r="0.15"/><circle cx="-2.925" cy="0.975" r="0.15"/><circle cx="-2.275" cy="0.975" r="0.15"/><circle cx="-1.625" cy="0.975" r="0.15"/><circle cx="-0.975" cy="0.975" r="0.15"/><circle cx="-0.325" cy="0.975" r="0.15"/><circle cx="0.325" cy="0.975" r="0.15"/><circle cx="0.975" cy="0.975" r="0.15"/><circle cx="1.625" cy="0.975" r="0.15"/><circle cx="2.275" cy="0.975" r="0.15"/><circle cx="2.925" cy="0.975" r="0.15"/><circle cx="3.575" cy="0.975" r="0.15" class="signal"/><circle cx="4.225" cy="0.975" r="0.15"/><circle cx="4.875" cy="0.975" r="0.15" class="signal"/><circle cx="5.525" cy="0.975" r="0.15"/><circle cx="6.175" cy="0.975" r="0.15" class="signal"/><circle cx="-6.175" cy="0.325" r="0.15"/><circle cx="-5.525" cy="0.325" r="0.15"/><circle cx="-4.875" cy="0.325" r="0.15"/><circle cx="-4.225" cy="0.325" r="0.15"/><circle cx="-3.575" cy="0.325" r="0.15"/><circle cx="-2.925" cy="0.325" r="0.15"/><circle cx="-2.275" cy="0.325" r="0.15"/><circle cx="-1.625" cy="0.325" r="0.15"/><circle cx="-0.975" cy="0.325" r="0.15"/><circle cx="-0.325" cy="0.325" r="0.15"/><circle cx="0.325" cy="0.325" r="0.15"/><circle cx="0.975" cy="0.325" r="0.15"/><circle cx="1.625" cy="0.325" r="0.15"/><circle cx="2.275" cy="0.325" r="0.15"/><circle cx="2.925" cy="0.325" r="0.15"/><circle cx="3.575" cy="0.325" r="0.15"/><circle cx="4.225" cy="0.325" r="0.15"/><circle cx="4.875" cy="0.325" r="0.15"/><circle cx="5.525" cy="0.325" r="0.15"/><circle cx="6.175" cy="0.325" r="0.15"/><circle cx="-6.175" cy="-0.325" r="0.15"/><circle cx="-5.525" cy="-0.325" r="0.15"/><circle cx="-4.875" cy="-0.325" r="0.15"/><circle cx="-4.225" cy="-0.325" r="0.15"/><circle cx="-3.575" cy="-0.325" r="0.15"/><circle cx="-2.925" cy="-0.325" r="0.15"/><circle cx="-2.275" cy="-0.325" r="0.15"/><circle cx="-1.625" cy="-0.325" r="0.15"/><circle cx="-0.975" cy="-0.325" r="0.15"/><circle cx="-0.325" cy="-0.325" r="0.15"/><circle cx="0.325" cy="-0.325" r="0.15"/><circle cx="0.975" cy="-0.325" r="0.15"/><circle cx="1.625" cy="-0.325" r="0.15"/><circle cx="2.275" cy="-0.325" r="0.15"/><circle cx="2.925" cy="-0.325" r="0.15"/><circle cx="3.575" cy="-0.325" r="0.15" class="signal"/><circle cx="4.225" cy="-0.325" r="0.15"/><circle cx="4.875" cy="-0.325" r="0.15"/><circle cx="5.525" cy="-0.325" r="0.15"/><circle cx="6.175" cy="-0.325" r="0.15"/><circle cx="-6.175" cy="-0.975" r="0.15"/><circle cx="-5.525" cy="-0.975" r="0.15"/><circle cx="-4.875" cy="-0.975" r="0.15"/><circle cx="-4.225" cy="-0.975" r="0.15"/><circle cx="-3.575" cy="-0.975" r="0.15"/><circle cx="-2.925" cy="-0.975" r="0.15"/><circle cx="-2.275" cy="-0.975" r="0.15"/><circle cx="-1.625" cy="-0.975" r="0.15"/><circle cx="-0.975" cy="-0.975" r="0.15"/><circle cx="-0.325" cy="-0.975" r="0.15"/><circle cx="0.325" cy="-0.975" r="0.15"/><circle cx="0.975" cy="-0.975" r="0.15"/><circle cx="1.625" cy="-0.975" r="0.15"/><circle cx="2.275" cy="-0.975" r="0.15"/><circle cx="2.925" cy="-0.975" r="0.15"/><circle cx="3.575" cy="-0.975" r="0.15"/><circle cx="4.225" cy="-0.975" r="0.15"/><circle cx="4.875" cy="-0.975" r="0.15" class="signal"/><circle cx="5.525" cy="-0.975" r="0.15" class="signal"/><circle cx="6.175" cy="-0.975" r="0.15"/><circle cx="-6.175" cy="-1.625" r="0.15"/><circle cx="-5.525" cy="-1.625" r="0.15"/><circle cx="-4.875" cy="-1.625" r="0.15"/><circle cx="-4.225" cy="-1.625" r="0.15"/><circle cx="-3.575" cy="-1.625" r="0.15"/><circle cx="-2.925" cy="-1.625" r="0.15"/><circle cx="-2.275" cy="-1.625" r="0.15"/><circle cx="-1.625" cy="-1.625" r="0.15"/><circle cx="-0.975" cy="-1.625" r="0.15"/><circle cx="-0.325" cy="-1.625" r="0.15"/><circle cx="0.325" cy="-1.625" r="0.15"/><circle cx="0.975" cy="-1.625" r="0.15"/><circle cx="1.625" cy="-1.625" r="0.15"/><circle cx="2.275" cy="-1.625" r="0.15"/><circle cx="2.925" cy="-1.625" r="0.15"/><circle cx="3.575" cy="-1.625" r="0.15"/><circle cx="4.225" cy="-1.625" r="0.15" class="signal"/><circle cx="4.875" cy="-1.625" r="0.15"/><circle cx="5.525" cy="-1.625" r="0.15" class="signal"/><circle cx="6.175" cy="-1.625" r="0.15" class="signal"/><circle cx="-6.175" cy="-2.275" r="0.15"/><circle cx="-5.525" cy="-2.275" r="0.15"/><circle cx="-4.875" cy="-2.275" r="0.15"/><circle cx="-4.225" cy="-2.275" r="0.15"/><circle cx="-3.575" cy="-2.275" r="0.15"/><circle cx="-2.925" cy="-2.275" r="0.15"/><circle cx="-2.275" cy="-2.275" r="0.15"/><circle cx="-1.625" cy="-2.275" r="0.15"/><circle cx="-0.975" cy="-2.275" r="0.15"/><circle cx="-0.325" cy="-2.275" r="0.15"/><circle cx="0.325" cy="-2.275" r="0.15"/><circle cx="0.975" cy="-2.275" r="0.15"/><circle cx="1.625" cy="-2.275" r="0.15"/><circle cx="2.275" cy="-2.275" r="0.15"/><circle cx="2.925" cy="-2.275" r="0.15"/><circle cx="3.575" cy="-2.275" r="0.15" class="signal"/><circle cx="4.225" cy="-2.275" r="0.15" class="signal"/><circle cx="4.875" cy="-2.275" r="0.15"/><circle cx="5.525" cy="-2.275" r="0.15" class="signal"/><circle cx="6.175" cy="-2.275" r="0.15"/><circle cx="-6.175" cy="-2.925" r="0.15"/><circle cx="-5.525" cy="-2.925" r="0.15"/><circle cx="-4.875" cy="-2.925" r="0.15"/><circle cx="-2.925" cy="-2.925" r="0.15"/><circle cx="-2.275" cy="-2.925" r="0.15"/><circle cx="-1.625" cy="-2.925" r="0.15"/><circle cx="-0.975" cy="-2.925" r="0.15"/><circle cx="-0.325" cy="-2.925" r="0.15"/><circle cx="0.325" cy="-2.925" r="0.15"/><circle cx="0.975" cy="-2.925" r="0.15"/><circle cx="1.625" cy="-2.925" r="0.15"/><circle cx="2.275" cy="-2.925" r="0.15"/><circle cx="2.925" cy="-2.925" r="0.15"/><circle cx="3.575" cy="-2.925" r="0.15"/><circle cx="4.225" cy="-2.925" r="0.15" class="signal"/><circle cx="4.875" cy="-2.925" r="0.15" class="signal"/><circle cx="5.525" cy="-2.925" r="0.15" class="signal"/><circle cx="6.175" cy="-2.925" r="0.15" class="signal"/><circle cx="-6.175" cy="-3.575" r="0.15"/><circle cx="-5.525" cy="-3.575" r="0.15"/><circle cx="-4.875" cy="-3.575" r="0.15"/><circle cx="-2.275" cy="-3.575" r="0.15"/><circle cx="-1.625" cy="-3.575" r="0.15"/><circle cx="-0.975" cy="-3.575" r="0.15"/><circle cx="-0.325" cy="-3.575" r="0.15"/><circle cx="0.325" cy="-3.575" r="0.15"/><circle cx="0.975" cy="-3.575" r="0.15"/><circle cx="1.625" cy="-3.575" r="0.15"/><circle cx="2.275" cy="-3.575" r="0.15"/><circle cx="2.925" cy="-3.575" r="0.15"/><circle cx="3.575" cy="-3.575" r="0.15" class="signal"/><circle cx="4.225" cy="-3.575" r="0.15" class="signal"/><circle cx="4.875" cy="-3.575" r="0.15" class="signal"/><circle cx="5.525" cy="-3.575" r="0.15"/><circle cx="6.175" cy="-3.575" r="0.15" class="signal"/><circle cx="-6.175" cy="-4.225" r="0.15"/><circle cx="-5.525" cy="-4.225" r="0.15"/><circle cx="-4.875" cy="-4.225" r="0.15"/><circle cx="-2.925" cy="-4.225" r="0.15"/><circle cx="-2.275" cy="-4.225" r="0.15"/><circle cx="-1.625" cy="-4.225" r="0.15"/><circle cx="-0.975" cy="-4.225" r="0.15"/><circle cx="-0.325" cy="-4.225" r="0.15"/><circle cx="0.325" cy="-4.225" r="0.15"/><circle cx="0.975" cy="-4.225" r="0.15"/><circle cx="1.625" cy="-4.225" r="0.15"/><circle cx="2.275" cy="-4.225" r="0.15"/><circle cx="2.925" cy="-4.225" r="0.15"/><circle cx="3.575" cy="-4.225" r="0.15" class="signal"/><circle cx="4.225" cy="-4.225" r="0.15" class="signal"/><circle cx="4.875" cy="-4.225" r="0.15" class="signal"/><circle cx="5.525" cy="-4.225" r="0.15"/><circle cx="6.175" cy="-4.225" r="0.15" class="signal"/><circle cx="-6.175" cy="-4.875" r="0.15"/><circle cx="-5.525" cy="-4.875" r="0.15"/><circle cx="-4.875" cy="-4.875" r="0.15"/><circle cx="-4.225" cy="-4.875" r="0.15"/><circle cx="-3.575" cy="-4.875" r="0.15"/><circle cx="-2.925" cy="-4.875" r="0.15"/><circle cx="-2.275" cy="-4.875" r="0.15"/><circle cx="-1.625" cy="-4.875" r="0.15"/><circle cx="-0.975" cy="-4.875" r="0.15"/><circle cx="-0.325" cy="-4.875" r="0.15"/><circle cx="0.325" cy="-4.875" r="0.15"/><circle cx="0.975" cy="-4.875" r="0.15"/><circle cx="1.625" cy="-4.875" r="0.15"/><circle cx="2.275" cy="-4.875" r="0.15"/><circle cx="2.925" cy="-4.875" r="0.15"/><circle cx="3.575" cy="-4.875" r="0.15" class="signal"/><circle cx="4.225" cy="-4.875" r="0.15" class="signal"/><circle cx="4.875" cy="-4.875" r="0.15" class="signal"/><circle cx="5.525" cy="-4.875" r="0.15" class="signal"/><circle cx="6.175" cy="-4.875" r="0.15" class="signal"/><circle cx="-6.175" cy="-5.525" r="0.15"/><circle cx="-5.525" cy="-5.525" r="0.15"/><circle cx="-4.875" cy="-5.525" r="0.15"/><circle cx="-4.225" cy="-5.525" r="0.15"/><circle cx="-3.575" cy="-5.525" r="0.15"/><circle cx="-2.925" cy="-5.525" r="0.15"/><circle cx="-2.275" cy="-5.525" r="0.15"/><circle cx="-1.625" cy="-5.525" r="0.15"/><circle cx="-0.975" cy="-5.525" r="0.15"/><circle cx="-0.325" cy="-5.525" r="0.15"/><circle cx="0.325" cy="-5.525" r="0.15"/><circle cx="0.975" cy="-5.525" r="0.15"/><circle cx="1.625" cy="-5.525" r="0.15"/><circle cx="2.275" cy="-5.525" r="0.15"/><circle cx="2.925" cy="-5.525" r="0.15"/><circle cx="3.575" cy="-5.525" r="0.15"/><circle cx="4.225" cy="-5.525" r="0.15" class="signal"/><circle cx="4.875" cy="-5.525" r="0.15" class="signal"/><circle cx="5.525" cy="-5.525" r="0.15" class="signal"/><circle cx="6.175" cy="-5.525" r="0.15"/><circle cx="-6.175" cy="-6.175" r="0.15"/><circle cx="-5.525" cy="-6.175" r="0.15"/><circle cx="-4.875" cy="-6.175" r="0.15"/><circle cx="-4.225" cy="-6.175" r="0.15"/><circle cx="-3.575" cy="-6.175" r="0.15"/><circle cx="-2.925" cy="-6.175" r="0.15"/><circle cx="-2.275" cy="-6.175" r="0.15"/><circle cx="-1.625" cy="-6.175" r="0.15"/><circle cx="-0.975" cy="-6.175" r="0.15"/><circle cx="-0.325" cy="-6.175" r="0.15"/><circle cx="0.325" cy="-6.175" r="0.15"/><circle cx="0.975" cy="-6.175" r="0.15"/><circle cx="1.625" cy="-6.175" r="0.15"/><circle cx="2.275" cy="-6.175" r="0.15"/><circle cx="2.925" cy="-6.175" r="0.15"/><circle cx="3.575" cy="-6.175" r="0.15" class="signal"/><circle cx="4.225" cy="-6.175" r="0.15" class="signal"/><circle cx="4.875" cy="-6.175" r="0.15" class="signal"/><circle cx="5.525" cy="-6.175" r="0.15"/><circle cx="6.175" cy="-6.175" r="0.15"/></g></g>
+<g id="memory"><rect x="-5" y="-7.25" width="10" height="14.5" class="package"/>
+<circle cx="-4.65" cy="6.95" r=".12" class="pin-one"/><g class="pads"><circle cx="-4.4" cy="6.825" r="0.2"/><circle cx="-3.6" cy="6.825" r="0.2"/><circle cx="-2.8" cy="6.825" r="0.2"/><circle cx="-2" cy="6.825" r="0.2"/><circle cx="-1.2" cy="6.825" r="0.2"/><circle cx="1.2" cy="6.825" r="0.2"/><circle cx="2" cy="6.825" r="0.2"/><circle cx="2.8" cy="6.825" r="0.2"/><circle cx="3.6" cy="6.825" r="0.2"/><circle cx="4.4" cy="6.825" r="0.2"/><circle cx="-4.4" cy="6.175" r="0.2"/><circle cx="-3.6" cy="6.175" r="0.2" class="signal"/><circle cx="-2.8" cy="6.175" r="0.2"/><circle cx="-2" cy="6.175" r="0.2" class="signal"/><circle cx="-1.2" cy="6.175" r="0.2"/><circle cx="1.2" cy="6.175" r="0.2"/><circle cx="2" cy="6.175" r="0.2" class="signal"/><circle cx="2.8" cy="6.175" r="0.2"/><circle cx="3.6" cy="6.175" r="0.2" class="signal"/><circle cx="4.4" cy="6.175" r="0.2"/><circle cx="-4.4" cy="5.525" r="0.2"/><circle cx="-3.6" cy="5.525" r="0.2" class="signal"/><circle cx="-2.8" cy="5.525" r="0.2" class="signal"/><circle cx="-2" cy="5.525" r="0.2" class="signal"/><circle cx="-1.2" cy="5.525" r="0.2"/><circle cx="1.2" cy="5.525" r="0.2"/><circle cx="2" cy="5.525" r="0.2" class="signal"/><circle cx="2.8" cy="5.525" r="0.2" class="signal"/><circle cx="3.6" cy="5.525" r="0.2" class="signal"/><circle cx="4.4" cy="5.525" r="0.2"/><circle cx="-4.4" cy="4.875" r="0.2"/><circle cx="-3.6" cy="4.875" r="0.2"/><circle cx="-2.8" cy="4.875" r="0.2" class="signal"/><circle cx="-2" cy="4.875" r="0.2"/><circle cx="-1.2" cy="4.875" r="0.2"/><circle cx="1.2" cy="4.875" r="0.2"/><circle cx="2" cy="4.875" r="0.2"/><circle cx="2.8" cy="4.875" r="0.2" class="signal"/><circle cx="3.6" cy="4.875" r="0.2"/><circle cx="4.4" cy="4.875" r="0.2"/><circle cx="-4.4" cy="4.225" r="0.2"/><circle cx="-3.6" cy="4.225" r="0.2" class="signal"/><circle cx="-2.8" cy="4.225" r="0.2" class="signal"/><circle cx="-2" cy="4.225" r="0.2" class="signal"/><circle cx="-1.2" cy="4.225" r="0.2"/><circle cx="1.2" cy="4.225" r="0.2"/><circle cx="2" cy="4.225" r="0.2" class="signal"/><circle cx="2.8" cy="4.225" r="0.2" class="signal"/><circle cx="3.6" cy="4.225" r="0.2" class="signal"/><circle cx="4.4" cy="4.225" r="0.2"/><circle cx="-4.4" cy="3.575" r="0.2"/><circle cx="-3.6" cy="3.575" r="0.2" class="signal"/><circle cx="-2.8" cy="3.575" r="0.2"/><circle cx="-2" cy="3.575" r="0.2" class="signal"/><circle cx="-1.2" cy="3.575" r="0.2"/><circle cx="1.2" cy="3.575" r="0.2"/><circle cx="2" cy="3.575" r="0.2" class="signal"/><circle cx="2.8" cy="3.575" r="0.2"/><circle cx="3.6" cy="3.575" r="0.2" class="signal"/><circle cx="4.4" cy="3.575" r="0.2"/><circle cx="-4.4" cy="2.925" r="0.2"/><circle cx="-3.6" cy="2.925" r="0.2"/><circle cx="-2.8" cy="2.925" r="0.2"/><circle cx="-2" cy="2.925" r="0.2"/><circle cx="-1.2" cy="2.925" r="0.2"/><circle cx="1.2" cy="2.925" r="0.2"/><circle cx="2" cy="2.925" r="0.2"/><circle cx="2.8" cy="2.925" r="0.2"/><circle cx="3.6" cy="2.925" r="0.2"/><circle cx="4.4" cy="2.925" r="0.2"/><circle cx="-4.4" cy="2.275" r="0.2"/><circle cx="-3.6" cy="2.275" r="0.2" class="signal"/><circle cx="-2.8" cy="2.275" r="0.2"/><circle cx="-2" cy="2.275" r="0.2" class="signal"/><circle cx="-1.2" cy="2.275" r="0.2"/><circle cx="1.2" cy="2.275" r="0.2"/><circle cx="2" cy="2.275" r="0.2" class="signal"/><circle cx="2.8" cy="2.275" r="0.2" class="signal"/><circle cx="3.6" cy="2.275" r="0.2" class="signal"/><circle cx="4.4" cy="2.275" r="0.2"/><circle cx="-4.4" cy="1.625" r="0.2"/><circle cx="-3.6" cy="1.625" r="0.2" class="signal"/><circle cx="-2.8" cy="1.625" r="0.2"/><circle cx="-2" cy="1.625" r="0.2" class="signal"/><circle cx="-1.2" cy="1.625" r="0.2"/><circle cx="1.2" cy="1.625" r="0.2" class="signal"/><circle cx="2" cy="1.625" r="0.2" class="signal"/><circle cx="2.8" cy="1.625" r="0.2"/><circle cx="3.6" cy="1.625" r="0.2" class="signal"/><circle cx="4.4" cy="1.625" r="0.2"/><circle cx="-4.4" cy="0.975" r="0.2"/><circle cx="-3.6" cy="0.975" r="0.2"/><circle cx="-2.8" cy="0.975" r="0.2"/><circle cx="-2" cy="0.975" r="0.2"/><circle cx="-1.2" cy="0.975" r="0.2"/><circle cx="1.2" cy="0.975" r="0.2"/><circle cx="2" cy="0.975" r="0.2"/><circle cx="2.8" cy="0.975" r="0.2"/><circle cx="3.6" cy="0.975" r="0.2"/><circle cx="4.4" cy="0.975" r="0.2"/><circle cx="-4.4" cy="-0.975" r="0.2"/><circle cx="-3.6" cy="-0.975" r="0.2"/><circle cx="-2.8" cy="-0.975" r="0.2"/><circle cx="-2" cy="-0.975" r="0.2"/><circle cx="-1.2" cy="-0.975" r="0.2"/><circle cx="1.2" cy="-0.975" r="0.2"/><circle cx="2" cy="-0.975" r="0.2"/><circle cx="2.8" cy="-0.975" r="0.2"/><circle cx="3.6" cy="-0.975" r="0.2"/><circle cx="4.4" cy="-0.975" r="0.2"/><circle cx="-4.4" cy="-1.625" r="0.2"/><circle cx="-3.6" cy="-1.625" r="0.2"/><circle cx="-2.8" cy="-1.625" r="0.2"/><circle cx="-2" cy="-1.625" r="0.2"/><circle cx="-1.2" cy="-1.625" r="0.2"/><circle cx="1.2" cy="-1.625" r="0.2"/><circle cx="2" cy="-1.625" r="0.2"/><circle cx="2.8" cy="-1.625" r="0.2"/><circle cx="3.6" cy="-1.625" r="0.2"/><circle cx="4.4" cy="-1.625" r="0.2"/><circle cx="-4.4" cy="-2.275" r="0.2"/><circle cx="-3.6" cy="-2.275" r="0.2"/><circle cx="-2.8" cy="-2.275" r="0.2"/><circle cx="-2" cy="-2.275" r="0.2"/><circle cx="-1.2" cy="-2.275" r="0.2"/><circle cx="1.2" cy="-2.275" r="0.2"/><circle cx="2" cy="-2.275" r="0.2"/><circle cx="2.8" cy="-2.275" r="0.2"/><circle cx="3.6" cy="-2.275" r="0.2"/><circle cx="4.4" cy="-2.275" r="0.2"/><circle cx="-4.4" cy="-2.925" r="0.2"/><circle cx="-3.6" cy="-2.925" r="0.2"/><circle cx="-2.8" cy="-2.925" r="0.2"/><circle cx="-2" cy="-2.925" r="0.2"/><circle cx="-1.2" cy="-2.925" r="0.2"/><circle cx="1.2" cy="-2.925" r="0.2"/><circle cx="2" cy="-2.925" r="0.2"/><circle cx="2.8" cy="-2.925" r="0.2"/><circle cx="3.6" cy="-2.925" r="0.2" class="signal"/><circle cx="4.4" cy="-2.925" r="0.2"/><circle cx="-4.4" cy="-3.575" r="0.2"/><circle cx="-3.6" cy="-3.575" r="0.2"/><circle cx="-2.8" cy="-3.575" r="0.2"/><circle cx="-2" cy="-3.575" r="0.2"/><circle cx="-1.2" cy="-3.575" r="0.2"/><circle cx="1.2" cy="-3.575" r="0.2"/><circle cx="2" cy="-3.575" r="0.2"/><circle cx="2.8" cy="-3.575" r="0.2"/><circle cx="3.6" cy="-3.575" r="0.2"/><circle cx="4.4" cy="-3.575" r="0.2"/><circle cx="-4.4" cy="-4.225" r="0.2"/><circle cx="-3.6" cy="-4.225" r="0.2"/><circle cx="-2.8" cy="-4.225" r="0.2"/><circle cx="-2" cy="-4.225" r="0.2"/><circle cx="-1.2" cy="-4.225" r="0.2"/><circle cx="1.2" cy="-4.225" r="0.2"/><circle cx="2" cy="-4.225" r="0.2"/><circle cx="2.8" cy="-4.225" r="0.2"/><circle cx="3.6" cy="-4.225" r="0.2"/><circle cx="4.4" cy="-4.225" r="0.2"/><circle cx="-4.4" cy="-4.875" r="0.2"/><circle cx="-3.6" cy="-4.875" r="0.2"/><circle cx="-2.8" cy="-4.875" r="0.2"/><circle cx="-2" cy="-4.875" r="0.2"/><circle cx="-1.2" cy="-4.875" r="0.2"/><circle cx="1.2" cy="-4.875" r="0.2"/><circle cx="2" cy="-4.875" r="0.2"/><circle cx="2.8" cy="-4.875" r="0.2"/><circle cx="3.6" cy="-4.875" r="0.2"/><circle cx="4.4" cy="-4.875" r="0.2"/><circle cx="-4.4" cy="-5.525" r="0.2"/><circle cx="-3.6" cy="-5.525" r="0.2"/><circle cx="-2.8" cy="-5.525" r="0.2"/><circle cx="-2" cy="-5.525" r="0.2"/><circle cx="-1.2" cy="-5.525" r="0.2"/><circle cx="1.2" cy="-5.525" r="0.2"/><circle cx="2" cy="-5.525" r="0.2"/><circle cx="2.8" cy="-5.525" r="0.2"/><circle cx="3.6" cy="-5.525" r="0.2"/><circle cx="4.4" cy="-5.525" r="0.2"/><circle cx="-4.4" cy="-6.175" r="0.2"/><circle cx="-3.6" cy="-6.175" r="0.2"/><circle cx="-2.8" cy="-6.175" r="0.2"/><circle cx="-2" cy="-6.175" r="0.2"/><circle cx="-1.2" cy="-6.175" r="0.2"/><circle cx="1.2" cy="-6.175" r="0.2"/><circle cx="2" cy="-6.175" r="0.2"/><circle cx="2.8" cy="-6.175" r="0.2"/><circle cx="3.6" cy="-6.175" r="0.2"/><circle cx="4.4" cy="-6.175" r="0.2"/><circle cx="-4.4" cy="-6.825" r="0.2"/><circle cx="-3.6" cy="-6.825" r="0.2"/><circle cx="-2.8" cy="-6.825" r="0.2"/><circle cx="-2" cy="-6.825" r="0.2"/><circle cx="-1.2" cy="-6.825" r="0.2"/><circle cx="1.2" cy="-6.825" r="0.2"/><circle cx="2" cy="-6.825" r="0.2"/><circle cx="2.8" cy="-6.825" r="0.2"/><circle cx="3.6" cy="-6.825" r="0.2"/><circle cx="4.4" cy="-6.825" r="0.2"/></g></g>
+</defs>
+<rect width="1248" height="1706" fill="#eef3f7"/>
+<text x="24" y="36" class="title">K230 → dual x16 LPDDR4</text>
+<text x="24" y="60" class="subtitle">390-ball NPU SoC · two 200-ball single-rank RAMs · 12 physical placements</text>
+<text x="24" y="84" class="caption">Package placement preview · routes not shown</text>
+<circle cx="765" cy="80" r="4" class="signal"/><text x="777" y="84" class="caption">LPDDR4 signals</text>
+<circle cx="960" cy="80" r="4" fill="#8195a6"/><text x="972" y="84" class="caption">Other populated pads</text>
+<g transform="translate(24 110)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">25 · Top · left offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-18 26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(6 26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="118.6" y="66.39" class="chip-label">LPDDR4 A</text>
+<text x="221.8" y="66.39" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(428 110)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">26 · Top · centered</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-12 26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(12 26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="144.4" y="66.39" class="chip-label">LPDDR4 A</text>
+<text x="247.6" y="66.39" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(832 110)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">27 · Top · right offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-6 26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(18 26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="170.2" y="66.39" class="chip-label">LPDDR4 A</text>
+<text x="273.4" y="66.39" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(24 506)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">28 · Right · top offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(26 -6) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(26 18) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="307.8" y="194.315" class="chip-label">LPDDR4 A</text>
+<text x="307.8" y="91.115" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(428 506)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">29 · Right · centered</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(26 -12) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(26 12) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="307.8" y="220.115" class="chip-label">LPDDR4 A</text>
+<text x="307.8" y="116.915" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(832 506)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">30 · Right · bottom offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(26 -18) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(26 6) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="307.8" y="245.915" class="chip-label">LPDDR4 A</text>
+<text x="307.8" y="142.715" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(24 902)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">31 · Bottom · right offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-6 -26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(18 -26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="170.2" y="289.99" class="chip-label">LPDDR4 A</text>
+<text x="273.4" y="289.99" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(428 902)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">32 · Bottom · centered</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-12 -26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(12 -26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="144.4" y="289.99" class="chip-label">LPDDR4 A</text>
+<text x="247.6" y="289.99" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(832 902)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">33 · Bottom · left offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-18 -26) rotate(90)"><use href="#memory"/></g>
+<g transform="translate(6 -26) rotate(90)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="118.6" y="289.99" class="chip-label">LPDDR4 A</text>
+<text x="221.8" y="289.99" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(24 1298)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">34 · Left · bottom offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-26 -18) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(-26 6) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="84.2" y="245.915" class="chip-label">LPDDR4 A</text>
+<text x="84.2" y="142.715" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(428 1298)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">35 · Left · centered</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-26 -12) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(-26 12) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="84.2" y="220.115" class="chip-label">LPDDR4 A</text>
+<text x="84.2" y="116.915" class="chip-label">LPDDR4 B</text>
+</g>
+<g transform="translate(832 1298)">
+<rect width="392" height="384" rx="10" class="panel"/>
+<text x="16" y="27" class="panel-title">36 · Left · top offset</text>
+<g transform="translate(196 207) scale(4.3 -4.3)">
+<rect x="-36" y="-36" width="72" height="72" rx="0.7" class="board"/>
+<use href="#soc"/>
+<g transform="translate(-26 -6) rotate(0)"><use href="#memory"/></g>
+<g transform="translate(-26 18) rotate(0)"><use href="#memory"/></g>
+</g>
+<text x="196" y="244.84" class="chip-label">K230</text>
+<text x="84.2" y="194.315" class="chip-label">LPDDR4 A</text>
+<text x="84.2" y="91.115" class="chip-label">LPDDR4 B</text>
+</g>
+</svg>
