@@ -1,3 +1,5 @@
+import { getFanoutDirectionCase } from "../lib/fanout-directions"
+import { getRk3308FanoutDirectionCase } from "../lib/rk3308-fanout-directions"
 import {
   createSample as create01TopLeftOffset,
   exitPosition as exitPosition01,
@@ -46,6 +48,54 @@ import {
   createSample as create12LeftTopOffset,
   exitPosition as exitPosition12,
 } from "./12-left-top-offset"
+import {
+  createSample as create13Rk3308TopLeftOffset,
+  exitPosition as exitPosition13,
+} from "./13-rk3308-top-left-offset"
+import {
+  createSample as create14Rk3308TopCenter,
+  exitPosition as exitPosition14,
+} from "./14-rk3308-top-center"
+import {
+  createSample as create15Rk3308TopRightOffset,
+  exitPosition as exitPosition15,
+} from "./15-rk3308-top-right-offset"
+import {
+  createSample as create16Rk3308RightTopOffset,
+  exitPosition as exitPosition16,
+} from "./16-rk3308-right-top-offset"
+import {
+  createSample as create17Rk3308RightCenter,
+  exitPosition as exitPosition17,
+} from "./17-rk3308-right-center"
+import {
+  createSample as create18Rk3308RightBottomOffset,
+  exitPosition as exitPosition18,
+} from "./18-rk3308-right-bottom-offset"
+import {
+  createSample as create19Rk3308BottomRightOffset,
+  exitPosition as exitPosition19,
+} from "./19-rk3308-bottom-right-offset"
+import {
+  createSample as create20Rk3308BottomCenter,
+  exitPosition as exitPosition20,
+} from "./20-rk3308-bottom-center"
+import {
+  createSample as create21Rk3308BottomLeftOffset,
+  exitPosition as exitPosition21,
+} from "./21-rk3308-bottom-left-offset"
+import {
+  createSample as create22Rk3308LeftBottomOffset,
+  exitPosition as exitPosition22,
+} from "./22-rk3308-left-bottom-offset"
+import {
+  createSample as create23Rk3308LeftCenter,
+  exitPosition as exitPosition23,
+} from "./23-rk3308-left-center"
+import {
+  createSample as create24Rk3308LeftTopOffset,
+  exitPosition as exitPosition24,
+} from "./24-rk3308-left-top-offset"
 
 export const AM62L_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition01, createSample: create01TopLeftOffset },
@@ -61,3 +111,46 @@ export const AM62L_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition11, createSample: create11LeftCenter },
   { exitPosition: exitPosition12, createSample: create12LeftTopOffset },
 ] as const
+
+export const RK3308_SAMPLE_DEFINITIONS = [
+  { exitPosition: exitPosition13, createSample: create13Rk3308TopLeftOffset },
+  { exitPosition: exitPosition14, createSample: create14Rk3308TopCenter },
+  { exitPosition: exitPosition15, createSample: create15Rk3308TopRightOffset },
+  { exitPosition: exitPosition16, createSample: create16Rk3308RightTopOffset },
+  { exitPosition: exitPosition17, createSample: create17Rk3308RightCenter },
+  {
+    exitPosition: exitPosition18,
+    createSample: create18Rk3308RightBottomOffset,
+  },
+  {
+    exitPosition: exitPosition19,
+    createSample: create19Rk3308BottomRightOffset,
+  },
+  { exitPosition: exitPosition20, createSample: create20Rk3308BottomCenter },
+  {
+    exitPosition: exitPosition21,
+    createSample: create21Rk3308BottomLeftOffset,
+  },
+  {
+    exitPosition: exitPosition22,
+    createSample: create22Rk3308LeftBottomOffset,
+  },
+  { exitPosition: exitPosition23, createSample: create23Rk3308LeftCenter },
+  { exitPosition: exitPosition24, createSample: create24Rk3308LeftTopOffset },
+] as const
+
+export const FANOUT_SAMPLE_DEFINITIONS = [
+  ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getFanoutDirectionCase(definition.exitPosition).id,
+    chip: "am62l" as const,
+  })),
+  ...RK3308_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getRk3308FanoutDirectionCase(definition.exitPosition).id,
+    chip: "rk3308" as const,
+  })),
+] as const
+
+export type FanoutSampleDefinition = (typeof FANOUT_SAMPLE_DEFINITIONS)[number]
+export type FanoutChip = FanoutSampleDefinition["chip"]
