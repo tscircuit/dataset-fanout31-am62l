@@ -1,7 +1,7 @@
 {
   "name": "@tscircuit/dataset-fanout31-am62l",
   "version": "0.0.1",
-  "description": "AM62L BGA fanout dataset covering all 12 directional boundary exits",
+  "description": "AM62L and Rockchip RK3308 BGA fanout dataset with 12 directional boundary exits per chip",
   "module": "lib/index.ts",
   "type": "module",
   "private": true,
