@@ -23,8 +23,9 @@ The four RAM families cover all twelve canonical directional edge positions in
 - majority down: bottom edge, right/center/left bands
 - majority left: left edge, bottom/center/top bands
 
-T113-S3 and AM3352 instead combine four package orientations and three band offsets,
-with bus-specific exits on all four edges in every case.
+T113-S3 and AM3352 combine four package orientations with three offsets
+(band offsets for T113-S3; terminal offsets for AM3352), with bus-specific
+exits on all four edges in every case.
 
 Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
@@ -311,15 +312,15 @@ calibration resistor), ADC references, USB VBUS/ID/charger control and
 oscillator pins also remain independent. USB ID is a role strap, never
 an externally driven supply input.
 
-The source breakout has **2 mm padding** around its 14 × 14 mm pad extent,
-producing an 18 × 18 mm boundary. Signal routing uses top, inner7, inner8,
+The source breakout has **5 mm padding** around its 14 × 14 mm pad extent,
+producing a 24 × 24 mm boundary. Signal routing uses top, inner7, inner8,
 and bottom; plane layers are excluded from signal routing. At 0°:
 
 | Edge | Main groups |
 | --- | --- |
 | Left | DDR address/control, clock and two byte lanes |
-| Bottom | LCD/SYSBOOT, GPMC multiplexed data and control |
-| Right | Ethernet, MMC0, USB and GPMC address |
+| Bottom | LCD/SYSBOOT, all GPMC address/data/control groups |
+| Right | Ethernet, MMC0 and USB |
 | Top | SPI0, I2C0, UART0/1, McASP0, JTAG and ADC |
 
 Auxiliary pins use their nearest edge. Groups represent physical mode-0
@@ -327,9 +328,10 @@ pin names, not simultaneous alternate mux functions. Five differential
 pairs preserve DDR clock, both DQS pairs and both USB pairs. DDR length
 skews are benchmark constraints, not complete board timing sign-off.
 
-The twelve fixtures combine four rotations with three cyclic band offsets.
-Cycling, rather than clamping, keeps dense buses from accumulating in one
-corner band. Package, bus edges and terminal banks rotate together. Four
+The twelve fixtures combine four rotations with three terminal offsets.
+Each bus keeps its natural exit band; terminal pads form contiguous bus
+blocks in logical bit order, with adjacent differential pairs. Package,
+bus edges and terminal banks rotate together. Four
 independent terminal banks sit 25 mm from the origin on a 64 × 64 mm board,
 with 0.5 mm pitch and transverse shifts of -0.75/0/+0.75 mm. The shared
 winding callback places boundary points on each declared edge. Through

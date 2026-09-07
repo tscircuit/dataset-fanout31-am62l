@@ -32,7 +32,7 @@ export const AM3352_COMPLETE_OBSTACLE_COUNT =
   324 + AM3352_SIGNAL_CONNECTIONS.length
 export const AM3352_SIGNAL_CONNECTION_COUNT = AM3352_SIGNAL_CONNECTIONS.length
 export const AM3352_PLANE_DROP_COUNT = AM3352_PLANE_DROPS.length
-export const AM3352_BREAKOUT_PADDING = 2
+export const AM3352_BREAKOUT_PADDING = 5
 
 type BoundaryExitPosition = Exclude<FanoutExitPosition, "center">
 export interface Am3352FanoutSample {
@@ -50,9 +50,9 @@ export function getAm3352SignalBusExitPosition(
 ): BoundaryExitPosition {
   const bus = AM3352_SIGNAL_BUSES.find((b) => b.name === busName)
   if (!bus) throw new Error(`Unknown AM3352BZCZD80 bus ${busName}`)
-  // Cycle bands on each natural edge. Clamping would merge dense buses into
-  // the same corner band and exceed via-safe boundary capacity.
-  const band = (bus.baseBand + directionCase.bandShift + 4) % 3
+  // Keep each bus on its physical band; scenarios vary package rotation
+  // and external terminal offset, without cycling interfaces across corners.
+  const band = bus.baseBand + 1
   const edge = rotateAm3352Edge(bus.exitEdge, directionCase.pcbRotation)
   const positions = {
     top: ["topside_left", "topside_center", "topside_right"],

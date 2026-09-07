@@ -225,3 +225,25 @@ test("all operational pins have one role; distinct voltages, capacitor outputs, 
   expect(AM3352_SIGNAL_BUSES).toHaveLength(48)
   expect(AM3352_DIFFERENTIAL_PAIRS).toHaveLength(5)
 })
+
+test("bus groups preserve DDR byte lanes and coherent GPMC destinations", () => {
+  const names = (busName: string) =>
+    AM3352_SIGNAL_BUSES.find((b) => b.name === busName)!.pins.map(
+      (n) => AM3352_PINS[n - 1]!.name,
+    )
+  for (const lane of [0, 1]) {
+    expect(names(`DDR_BYTE${lane}`)).toEqual([
+      ...Array.from({ length: 8 }, (_, i) => `DDR_D${8 * lane + i}`),
+      `DDR_DQM${lane}`,
+      `DDR_DQS${lane}`,
+      `DDR_DQSn${lane}`,
+    ])
+  }
+  expect(names("DDR_CLK")).toEqual(["DDR_CK", "DDR_CKn"])
+  for (const bus of AM3352_SIGNAL_BUSES.filter((b) =>
+    b.name.startsWith("GPMC_"),
+  ))
+    expect(bus.exitEdge).toBe("bottom")
+  expect(names("USB0")).toEqual(["USB0_DP", "USB0_DM"])
+  expect(names("USB1")).toEqual(["USB1_DP", "USB1_DM"])
+})

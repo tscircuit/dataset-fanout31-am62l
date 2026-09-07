@@ -172,7 +172,7 @@ const groups = [
     "LCD_PCLK",
   ]),
   bus("GPMC_AD", "bottom", 0, sequence("GPMC_AD", 16)),
-  bus("GPMC_A", "right", 1, sequence("GPMC_A", 12)),
+  bus("GPMC_A", "bottom", -1, sequence("GPMC_A", 12)),
   bus("GPMC_CONTROL", "bottom", -1, [
     ...sequence("GPMC_CSn", 4),
     "GPMC_CLK",

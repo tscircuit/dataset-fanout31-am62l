@@ -55,12 +55,12 @@ export function generateAm3352PreviewSvg() {
 <text x="16" y="27" font-size="14" font-weight="600">${index + 61} · ${direction.name.replace("AM3352BZCZD80 · ", "")}</text>
 <g transform="translate(160 166) scale(3.4 -3.4)">
 <rect x="-32" y="-32" width="64" height="64" rx="1" fill="#f7fafc" stroke="#e4edf3" stroke-width=".15"/>
-<rect x="-9" y="-9" width="18" height="18" fill="none" stroke="#9bb4c8" stroke-width=".2" stroke-dasharray=".6 .6"/>
+<rect x="-12" y="-12" width="24" height="24" fill="none" stroke="#9bb4c8" stroke-width=".2" stroke-dasharray=".6 .6"/>
 <g transform="rotate(${direction.pcbRotation})"><use href="#soc"/></g>
 ${banks}
-${[0, 90, 180, 270].map((rotation) => `<path transform="rotate(${rotation})" d="M0 11V19" fill="none" stroke="#608eac" stroke-width=".25" marker-end="url(#arrow)"/>`).join("")}
+${[0, 90, 180, 270].map((rotation) => `<path transform="rotate(${rotation})" d="M0 14V19" fill="none" stroke="#608eac" stroke-width=".25" marker-end="url(#arrow)"/>`).join("")}
 </g>${labels}
-<text x="160" y="287" text-anchor="middle" font-size="10">Bus exits on all four edges · 2 mm padding</text>
+<text x="160" y="287" text-anchor="middle" font-size="10">Bus exits on all four edges · 5 mm padding</text>
 </g>`
   }).join("\n")
   const legend = [
@@ -78,7 +78,7 @@ ${[0, 90, 180, 270].map((rotation) => `<path transform="rotate(${rotation})" d="
     .join("")
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1032" height="1386" viewBox="0 0 1032 1386" role="img" aria-labelledby="title description">
 <title id="title">AM3352BZCZD80: twelve all-pin fanout fixtures</title>
-<desc id="description">The BGA and four independent terminal banks rotate through four orientations and three band offsets. Buses break out near their source pins on all four sides. 117 supply, ground and strap connections drop to six separate planes. A3 and M5 remain unconnected. Dashed squares show SoC breakout boundaries. No solved routes are shown.</desc>
+<desc id="description">The BGA and four independent terminal banks rotate through four orientations and three terminal offsets. Buses break out near their source pins on all four sides. 117 supply, ground and strap connections drop to six separate planes. A3 and M5 remain unconnected. Dashed squares show SoC breakout boundaries. No solved routes are shown.</desc>
 <style>text{font-family:system-ui,-apple-system,sans-serif;fill:#294052}</style>
 <defs><g id="soc"><rect x="-7.5" y="-7.5" width="15" height="15" fill="#e7eef4" stroke="#506a80" stroke-width=".15"/>${soc}<circle cx="-6.4" cy="6.4" r=".2" fill="#294052"/></g>${targetDefinitions}<marker id="arrow" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0L4 2L0 4" fill="none" stroke="#608eac" stroke-width=".7"/></marker></defs>
 <rect width="1032" height="1386" fill="#eef3f7"/>

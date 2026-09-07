@@ -34,7 +34,7 @@ const naturalEdges: Record<string, string> = {
   LCD: "bottom",
   GPMC_AD: "bottom",
   GPMC_CONTROL: "bottom",
-  GPMC_A: "right",
+  GPMC_A: "bottom",
   ETHERNET: "right",
   MMC0: "right",
   USB0: "right",
@@ -68,10 +68,10 @@ test("all 12 AM3352BZCZD80 captures escape every non-NC lead and drop each suppl
     expect(srj.obstacles).toHaveLength(529)
     expect(srj.layerCount).toBe(10)
     for (const [key, value] of Object.entries({
-      minX: -9,
-      maxX: 9,
-      minY: -9,
-      maxY: 9,
+      minX: -12,
+      maxX: 12,
+      minY: -12,
+      maxY: 12,
     })) {
       expect(
         options.sharedBoundary?.[key as "minX" | "maxX" | "minY" | "maxY"],
@@ -186,10 +186,10 @@ test("all 12 AM3352BZCZD80 captures escape every non-NC lead and drop each suppl
       )
       for (const target of Object.values(bus.connectionExitTargets ?? {})) {
         expect(bus.allowedLayers).toContain(target.layer)
-        if (edge === "top") expect(target.y).toBeGreaterThan(9)
-        if (edge === "right") expect(target.x).toBeGreaterThan(9)
-        if (edge === "bottom") expect(target.y).toBeLessThan(-9)
-        if (edge === "left") expect(target.x).toBeLessThan(-9)
+        if (edge === "top") expect(target.y).toBeGreaterThan(12)
+        if (edge === "right") expect(target.x).toBeGreaterThan(12)
+        if (edge === "bottom") expect(target.y).toBeLessThan(-12)
+        if (edge === "left") expect(target.x).toBeLessThan(-12)
       }
     }
     expect(
@@ -204,7 +204,7 @@ test("all 12 AM3352BZCZD80 captures escape every non-NC lead and drop each suppl
         ],
         lengthTolerance: 0.1,
       })
-    layouts.add(JSON.stringify(s.signalBusExitPositions))
+    layouts.add(JSON.stringify(targets.map((p) => p.center)))
     expect(() => new FanoutSolver(srj, options)).not.toThrow()
   }
   expect(layouts.size).toBe(12)
