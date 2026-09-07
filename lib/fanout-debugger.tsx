@@ -20,10 +20,14 @@ export function FanoutDebugger({
   createSample,
   chipName,
   ballCount,
+  packageLabel,
+  signalLabel = "DDR signals",
 }: {
   createSample: () => Promise<FanoutDebuggerSample>
   chipName: string
   ballCount: number
+  packageLabel?: string
+  signalLabel?: string
 }) {
   const [sample, setSample] = useState<FanoutDebuggerSample>()
   const [loadError, setLoadError] = useState<string>()
@@ -103,7 +107,7 @@ export function FanoutDebugger({
             Dataset Fanout31 · {sample.id} · {sample.name}
           </strong>
           <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>
-            {ballCount}-ball {chipName} ·{" "}
+            {packageLabel ?? `${ballCount}-ball`} {chipName} ·{" "}
             {sample.simpleRouteJson.connections.length} connections ·{" "}
             {buses.length} buses · {sample.simpleRouteJson.layerCount} layers
           </div>
@@ -111,7 +115,7 @@ export function FanoutDebugger({
 
         <div style={{ color: "#475569", fontSize: 13 }}>
           Complete tscircuit/core progressive-fanout workload: all {signalCount}{" "}
-          DDR signals in {signalBusCount} buses, {differentialPairCount}{" "}
+          {signalLabel} in {signalBusCount} buses, {differentialPairCount}{" "}
           differential pairs, and {planeDropCount} ground/power plane drops.
         </div>
 
