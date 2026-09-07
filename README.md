@@ -1,10 +1,10 @@
 # dataset-fanout31-am62l
 
-Forty-eight TSX-generated BGA fanout problems: twelve AM62L, twelve
+Sixty TSX-generated BGA/QFP fanout problems: twelve AM62L, twelve
 Rockchip RK3308-to-DDR3L, twelve Canaan K230-to-LPDDR4, and twelve
-NXP i.MX 6ULL-to-DDR3L configurations.
-The package name and existing IDs 01-36 remain stable. i.MX 6ULL uses
-IDs 37-48 and separate exports.
+NXP i.MX 6ULL-to-DDR3L, plus twelve Allwinner T113-S3 all-pin configurations.
+The package name and existing IDs 01-48 remain stable. T113-S3 uses
+IDs 49-60 and separate exports.
 
 | Sample family | SoC package | Signal connections | Plane drops | Total connections | Buses | Physical pads |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
@@ -12,14 +12,18 @@ IDs 37-48 and separate exports.
 | RK3308, 13-24 | RK3308, 355 balls | 49 | 113 | 162 | 122 | 451 |
 | K230, 25-36 | K230, 390 balls | 65 | 106 | 171 | 123 | 790 |
 | i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
+| T113-S3, 49-60 | T113-S3, 128 leads + EPAD | 106 | 22 | 128 | 60 | 235 |
 
-Each family covers all twelve canonical directional edge positions in
+The four RAM families cover all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
 
 - majority up: top edge, left/center/right bands
 - majority right: right edge, top/center/bottom bands
 - majority down: bottom edge, right/center/left bands
 - majority left: left edge, bottom/center/top bands
+
+T113-S3 instead combines four package orientations and three band offsets,
+with bus-specific exits on all four edges in every case.
 
 Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
@@ -178,20 +182,111 @@ complete powered board.
 Regenerate the overview with `bun scripts/generate-imx6ull-preview.ts`.
 Run this family with `bun run solve-count --chip imx6ull`.
 
+## Allwinner T113-S3: every non-NC pin
+
+![Twelve T113-S3 all-pin placements](docs/t113s3-placements.svg)
+
+[T113-S3 / JLCPCB C5197687](https://jlcpcb.com/partdetail/AllwinnerTech-T113S3/C5197687)
+contains its DDR3 RAM internally. These twelve cases break out **every external
+pin except NC0 (pin 106)**, including the exposed ground pad as logical pin
+129. Each case contains 106 external signal/reference/regulator-output
+connections and 22 supply/ground plane drops. All 129 SoC pads, including
+NC0, remain obstacles, alongside 106 individual destination pads.
+The destination bank represents external terminals, not another RAM chip.
+
+[`lib/t113s3-pin-map.ts`](lib/t113s3-pin-map.ts) follows Table 4-2 of
+Allwinner's [T113-S3 datasheet v1.6, March 3, 2022](https://datasheet.lcsc.com/datasheet/pdf/a431990106c90c1e37535402cd34f7c4.pdf?productCode=C5197687)
+(printed pp. 23-28). This manufacturer-authored document is hosted by LCSC.
+Use that table rather than Figure 7-1, whose DZQ/PD/PG labels conflict with
+it. The assignments and EPAD ground connection are independently checked
+against U9 on sheet 3 of the
+[TinyEmbedded-Dual-A schematic](https://github.com/yuansco/TinyEmbedded-Dual/blob/main/Document/TinyEmbedded_Dual_A.pdf).
+
+The eLQFP128 footprint uses a 14 x 14 mm body, 0.4 mm lead pitch, and the
+**5.72 x 5.72 mm exposed pad** explicitly selected in Figure 7-2's caution.
+Pin numbering is counterclockwise in the top PCB view, pin 1 at the upper
+left. The 1.50 x 0.20 mm perimeter lands centered 7.70 mm from the origin
+are fixture geometry choices; the package's nominal lead-tip span is 16 mm.
+
+The fixture selects external power supplies and 3.3 V GPIO D/E/G banks.
+The following assignments use Table 5-2's recommended operating voltages:
+
+| Plane net | Layer | Connected pins |
+| --- | --- | --- |
+| GND | inner1 | AGND 91, EPAD 129 |
+| 3.3 V | inner2 | LDO-IN 29, VCC-PE 34, VCC-PD 66, VCC-TVOUT 77, VCC-IO 83, VCC-PG 128 |
+| 1.8 V | inner3 | VCC-PLL 20, VCC-RTC 26, VDD18-DRAM 50, VCC-LVDS 65, AVCC 89, HPVCC 97, VCC-TVIN 107 |
+| 1.5 V DRAM | inner4 | VCC-DRAM0 48, VCC-DRAM1 49 |
+| 0.95 V core/system | inner5 | VDD-SYS0 46, VDD-SYS1 51, VDD-SYS2 81, VDD-CORE0 116, VDD-CORE1 117 |
+
+Each plane net occupies a separate copper layer. Signals use `top`, `inner6`,
+and `bottom`. LDOA-OUT 28 and LDOB-OUT 30 have independent external terminals;
+they are not tied to the externally driven power rails. In particular,
+LDOB defaults to 1.35 V, so it must not be shorted to the 1.5 V DRAM supply.
+TVIN-VRP/VRN 110/111, VRA1/VRA2 92/90, HPOUTFB 100, DZQ 47, and the crystal
+pins also remain distinct external connections. Their external decoupling,
+calibration resistors, crystals, rail filtering, and power sequencing are
+outside this escape-routing dataset.
+
+Seven GPIO groups preserve the physical banks (PD is split into 0-9 and
+10-22). USB0, USB1, and MICIN3 preserve their fixed differential polarities;
+the remaining 28 connections use individual buses. This gives 38 boundary
+buses plus 22 single-pin plane buses. GPIO multiplex functions are not
+assumed, so alternative LVDS/DSI/RGB assignments are not simultaneously
+wired. A 0.25 mm skew budget on the three fixed pairs is a benchmark
+constraint, not interface timing signoff.
+
+The SoC remains centered, with **2 mm fanout padding** and a
+20.9 x 20.9 mm breakout boundary. Each bus uses an edge near its physical
+pins, instead of sending all 106 external connections to one side:
+
+| Buses | Natural exit edge (0° package orientation) |
+| --- | --- |
+| GPIOC, GPIOF | Left |
+| GPIOE, GPIOD 0-9 | Bottom |
+| GPIOB, GPIOD 10-22, MICIN3 | Right |
+| GPIOG, USB0, USB1 | Top |
+| Individual reference/clock/analog pins | Their package side |
+
+Four independent terminal banks sit 18 mm from the origin, using 0.5 mm
+pad pitch. The twelve samples combine package rotations of 0°, 270°, 180°,
+and 90° with three band offsets. Package, bus exits, and terminal banks
+rotate together, so every sample keeps its bus-specific escape directions.
+The terminal banks shift by -0.75/0/+0.75 mm along their sides. Existing
+sample IDs remain stable; their former directional suffixes now identify
+these orientation/offset cases rather than a single shared exit edge.
+
+The core default implicit placement pass exposes one edge per region.
+[`lib/t113s3-breakout-placement.ts`](lib/t113s3-breakout-placement.ts) uses
+core's supported `implicitBreakoutPointSolverFn` callback to partition buses
+by edge and run the **same pinned winding solver** on each partition. It
+preserves differential pairs, rejects missing/duplicate endpoints, and
+lets the winding solver choose point coordinates, ordering, and layers.
+The exact resulting SoC fanout input is still captured from core.
+
+Only the SoC fanout is routed; external-terminal breakouts and subsequent
+board routing remain disabled. The board is 48 x 48 mm. Through vias use
+0.24 mm lands and 0.10 mm holes, with via-in-pad and blind/buried vias disabled.
+
+Regenerate the overview with `bun scripts/generate-t113s3-preview.ts`.
+Run this family with `bun run solve-count --chip t113s3`.
+
 ## Fanout fixture scope
 
-The TSX describes actual SoC-to-RAM connectivity and requests boundary
+The RAM-family TSX describes actual SoC-to-RAM connectivity and requests boundary
 directions through `<breakout>` groups. Core's implicit winding
 solver places the `AutoplacedBreakoutPoint`s; the dataset captures the
 exact SoC `FanoutSolver` constructor arguments after that pass. Individual breakout-point
 coordinates are not supplied by the sample files. Each case is displayed
 through `GenericSolverDebugger` in the exported React Cosmos site.
 
-These are SoC escape-routing fixtures. The scored routes end at the SoC
+These are SoC escape-routing fixtures. The scored signal routes end at the SoC
 breakout boundary, and board routing between the packages is disabled.
-They do not model a complete working board: other SoC interfaces, analog
-grounds and supplies, RAM power/reference connections, decoupling, and
-termination circuitry are outside this workload.
+They do not model a complete working board. The RAM families omit other
+SoC interfaces, analog grounds/supplies, and RAM power/reference connections.
+T113-S3 includes every non-NC external pin as described above. External
+decoupling, termination, and power-generation circuitry are outside all
+these escape-routing workloads.
 
 The AM62L footprint, signal assignments, preferred layers, length-skew
 limits, differential pairs, GND/VDDS_DDR plane drops, and plane-drop
@@ -212,7 +307,7 @@ bun run build:site
 ```
 
 `solve-count` reports the measured solver success count with a 60-second
-timeout per sample in a family run. With no arguments it runs all 48
+timeout per sample in a family run. With no arguments it runs all 60
 samples; use `--chip` to select a family:
 
 ```sh
@@ -221,6 +316,7 @@ bun run solve-count --chip am62l
 bun run solve-count --chip rk3308
 bun run solve-count --chip k230
 bun run solve-count --chip imx6ull
+bun run solve-count --chip t113s3
 bun run solve-count --sample 13-rk3308-top-left-offset
 bun run solve-count --sample 25-k230-top-left-offset
 ```
@@ -228,4 +324,4 @@ bun run solve-count --sample 25-k230-top-left-offset
 `FANOUT_SAMPLE_TIMEOUT_MS` overrides the timeout for family runs. A
 `--sample` invocation runs directly and returns one JSON result. Legacy
 exit selectors such as `--sample topside_left` still select AM62L unless
-`--chip rk3308`, `--chip k230`, or `--chip imx6ull` is supplied.
+`--chip rk3308`, `--chip k230`, `--chip imx6ull`, or `--chip t113s3` is supplied.

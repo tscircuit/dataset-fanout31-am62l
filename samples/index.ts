@@ -196,6 +196,56 @@ import {
   exitPosition as exitImx48,
 } from "./48-imx6ull-left-top-offset"
 
+import { getT113s3FanoutDirectionCase } from "../lib/t113s3-fanout-directions"
+import {
+  createSample as createT113s3_49,
+  exitPosition as exitT113s3_49,
+} from "./49-t113s3-top-left-offset"
+import {
+  createSample as createT113s3_50,
+  exitPosition as exitT113s3_50,
+} from "./50-t113s3-top-center"
+import {
+  createSample as createT113s3_51,
+  exitPosition as exitT113s3_51,
+} from "./51-t113s3-top-right-offset"
+import {
+  createSample as createT113s3_52,
+  exitPosition as exitT113s3_52,
+} from "./52-t113s3-right-top-offset"
+import {
+  createSample as createT113s3_53,
+  exitPosition as exitT113s3_53,
+} from "./53-t113s3-right-center"
+import {
+  createSample as createT113s3_54,
+  exitPosition as exitT113s3_54,
+} from "./54-t113s3-right-bottom-offset"
+import {
+  createSample as createT113s3_55,
+  exitPosition as exitT113s3_55,
+} from "./55-t113s3-bottom-right-offset"
+import {
+  createSample as createT113s3_56,
+  exitPosition as exitT113s3_56,
+} from "./56-t113s3-bottom-center"
+import {
+  createSample as createT113s3_57,
+  exitPosition as exitT113s3_57,
+} from "./57-t113s3-bottom-left-offset"
+import {
+  createSample as createT113s3_58,
+  exitPosition as exitT113s3_58,
+} from "./58-t113s3-left-bottom-offset"
+import {
+  createSample as createT113s3_59,
+  exitPosition as exitT113s3_59,
+} from "./59-t113s3-left-center"
+import {
+  createSample as createT113s3_60,
+  exitPosition as exitT113s3_60,
+} from "./60-t113s3-left-top-offset"
+
 export const AM62L_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition01, createSample: create01TopLeftOffset },
   { exitPosition: exitPosition02, createSample: create02TopCenter },
@@ -268,6 +318,21 @@ export const IMX6ULL_SAMPLE_DEFINITIONS = [
   { exitPosition: exitImx48, createSample: createImx48 },
 ] as const
 
+export const T113S3_SAMPLE_DEFINITIONS = [
+  { exitPosition: exitT113s3_49, createSample: createT113s3_49 },
+  { exitPosition: exitT113s3_50, createSample: createT113s3_50 },
+  { exitPosition: exitT113s3_51, createSample: createT113s3_51 },
+  { exitPosition: exitT113s3_52, createSample: createT113s3_52 },
+  { exitPosition: exitT113s3_53, createSample: createT113s3_53 },
+  { exitPosition: exitT113s3_54, createSample: createT113s3_54 },
+  { exitPosition: exitT113s3_55, createSample: createT113s3_55 },
+  { exitPosition: exitT113s3_56, createSample: createT113s3_56 },
+  { exitPosition: exitT113s3_57, createSample: createT113s3_57 },
+  { exitPosition: exitT113s3_58, createSample: createT113s3_58 },
+  { exitPosition: exitT113s3_59, createSample: createT113s3_59 },
+  { exitPosition: exitT113s3_60, createSample: createT113s3_60 },
+] as const
+
 export const FANOUT_SAMPLE_DEFINITIONS = [
   ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
     ...definition,
@@ -288,6 +353,11 @@ export const FANOUT_SAMPLE_DEFINITIONS = [
     ...definition,
     id: getImx6ullFanoutDirectionCase(definition.exitPosition).id,
     chip: "imx6ull" as const,
+  })),
+  ...T113S3_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getT113s3FanoutDirectionCase(definition.exitPosition).id,
+    chip: "t113s3" as const,
   })),
 ] as const
 

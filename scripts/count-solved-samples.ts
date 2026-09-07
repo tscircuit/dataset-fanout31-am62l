@@ -7,12 +7,12 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 60_000
 
-export const SOLVE_COUNT_HELP = `Usage: bun run solve-count [--chip am62l|rk3308|k230|imx6ull|all] [--sample ID|EXIT]
+export const SOLVE_COUNT_HELP = `Usage: bun run solve-count [--chip am62l|rk3308|k230|imx6ull|t113s3|all] [--sample ID|EXIT]
 
 With no arguments, solve all ${FANOUT_SAMPLE_DEFINITIONS.length} samples. --chip selects one chip family.
 --sample selects a unique ID, such as 13-rk3308-top-left-offset.
 Legacy exit names, such as topside_left, default to AM62L unless --chip
-selects rk3308, k230, or imx6ull. Use a unique ID when combining --sample with --chip all.
+selects rk3308, k230, imx6ull, or t113s3. Use a unique ID when combining --sample with --chip all.
 Single-sample results are emitted as JSON.
 
 FANOUT_SAMPLE_TIMEOUT_MS sets the per-sample timeout for a full-family run
@@ -53,10 +53,11 @@ export function selectSamples(args: readonly string[]): {
         value !== "rk3308" &&
         value !== "k230" &&
         value !== "imx6ull" &&
+        value !== "t113s3" &&
         value !== "all"
       ) {
         throw new Error(
-          `Unknown chip ${value}; expected am62l, rk3308, k230, imx6ull, or all`,
+          `Unknown chip ${value}; expected am62l, rk3308, k230, imx6ull, t113s3, or all`,
         )
       }
       chip = value
@@ -99,7 +100,7 @@ export function selectSamples(args: readonly string[]): {
   )
   if (samples.length > 1) {
     throw new Error(
-      `Exit ${sampleSelector} matches multiple chips; use a sample ID or select --chip am62l|rk3308|k230|imx6ull`,
+      `Exit ${sampleSelector} matches multiple chips; use a sample ID or select --chip am62l|rk3308|k230|imx6ull|t113s3`,
     )
   }
   if (samples.length === 0) {

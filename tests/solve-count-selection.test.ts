@@ -1,18 +1,34 @@
 import { expect, test } from "bun:test"
 import { selectSamples } from "../scripts/count-solved-samples"
 
-test("solve-count selects all four chip families without changing legacy sample selectors", () => {
+test("solve-count selects all five chip families without changing legacy sample selectors", () => {
   const all = selectSamples([])
-  expect(all.samples).toHaveLength(48)
+  expect(all.samples).toHaveLength(60)
   expect(all.singleSample).toBe(false)
-  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(48)
+  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(60)
 
-  for (const chip of ["am62l", "rk3308", "k230", "imx6ull"] as const) {
+  for (const chip of [
+    "am62l",
+    "rk3308",
+    "k230",
+    "imx6ull",
+    "t113s3",
+  ] as const) {
     const family = selectSamples(["--chip", chip])
     expect(family.samples).toHaveLength(12)
     expect(family.samples.every((sample) => sample.chip === chip)).toBe(true)
   }
 
+  expect(
+    selectSamples(["--chip", "t113s3", "--sample", "topside_left"]).samples.map(
+      (s) => s.id,
+    ),
+  ).toEqual(["49-t113s3-top-left-offset"])
+  expect(
+    selectSamples(["--sample", "60-t113s3-left-top-offset"]).samples.map(
+      (s) => s.id,
+    ),
+  ).toEqual(["60-t113s3-left-top-offset"])
   const legacy = selectSamples(["--sample", "topside_left"])
   expect(legacy.singleSample).toBe(true)
   expect(legacy.samples.map((sample) => sample.id)).toEqual([
