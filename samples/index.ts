@@ -146,6 +146,56 @@ import {
   exitPosition as exitPosition36,
 } from "./36-k230-left-top-offset"
 
+import { getImx6ullFanoutDirectionCase } from "../lib/imx6ull-fanout-directions"
+import {
+  createSample as createImx37,
+  exitPosition as exitImx37,
+} from "./37-imx6ull-top-left-offset"
+import {
+  createSample as createImx38,
+  exitPosition as exitImx38,
+} from "./38-imx6ull-top-center"
+import {
+  createSample as createImx39,
+  exitPosition as exitImx39,
+} from "./39-imx6ull-top-right-offset"
+import {
+  createSample as createImx40,
+  exitPosition as exitImx40,
+} from "./40-imx6ull-right-top-offset"
+import {
+  createSample as createImx41,
+  exitPosition as exitImx41,
+} from "./41-imx6ull-right-center"
+import {
+  createSample as createImx42,
+  exitPosition as exitImx42,
+} from "./42-imx6ull-right-bottom-offset"
+import {
+  createSample as createImx43,
+  exitPosition as exitImx43,
+} from "./43-imx6ull-bottom-right-offset"
+import {
+  createSample as createImx44,
+  exitPosition as exitImx44,
+} from "./44-imx6ull-bottom-center"
+import {
+  createSample as createImx45,
+  exitPosition as exitImx45,
+} from "./45-imx6ull-bottom-left-offset"
+import {
+  createSample as createImx46,
+  exitPosition as exitImx46,
+} from "./46-imx6ull-left-bottom-offset"
+import {
+  createSample as createImx47,
+  exitPosition as exitImx47,
+} from "./47-imx6ull-left-center"
+import {
+  createSample as createImx48,
+  exitPosition as exitImx48,
+} from "./48-imx6ull-left-top-offset"
+
 export const AM62L_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition01, createSample: create01TopLeftOffset },
   { exitPosition: exitPosition02, createSample: create02TopCenter },
@@ -203,6 +253,21 @@ export const K230_SAMPLE_DEFINITIONS = [
   { exitPosition: exitPosition36, createSample: create36K230LeftTopOffset },
 ] as const
 
+export const IMX6ULL_SAMPLE_DEFINITIONS = [
+  { exitPosition: exitImx37, createSample: createImx37 },
+  { exitPosition: exitImx38, createSample: createImx38 },
+  { exitPosition: exitImx39, createSample: createImx39 },
+  { exitPosition: exitImx40, createSample: createImx40 },
+  { exitPosition: exitImx41, createSample: createImx41 },
+  { exitPosition: exitImx42, createSample: createImx42 },
+  { exitPosition: exitImx43, createSample: createImx43 },
+  { exitPosition: exitImx44, createSample: createImx44 },
+  { exitPosition: exitImx45, createSample: createImx45 },
+  { exitPosition: exitImx46, createSample: createImx46 },
+  { exitPosition: exitImx47, createSample: createImx47 },
+  { exitPosition: exitImx48, createSample: createImx48 },
+] as const
+
 export const FANOUT_SAMPLE_DEFINITIONS = [
   ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
     ...definition,
@@ -218,6 +283,11 @@ export const FANOUT_SAMPLE_DEFINITIONS = [
     ...definition,
     id: getK230FanoutDirectionCase(definition.exitPosition).id,
     chip: "k230" as const,
+  })),
+  ...IMX6ULL_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getImx6ullFanoutDirectionCase(definition.exitPosition).id,
+    chip: "imx6ull" as const,
   })),
 ] as const
 
