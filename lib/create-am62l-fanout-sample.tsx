@@ -138,7 +138,7 @@ export function Am62lFanoutCircuit({
 }) {
   const directionCase = getFanoutDirectionCase(exitPosition)
   const signalBusExitPositions = getSignalBusExitPositions(directionCase)
-  const dramBusExitPositions = Object.fromEntries(
+  const dramTargetExitPositions = Object.fromEntries(
     Object.entries(signalBusExitPositions).map(([busName, busExitPosition]) => [
       busName,
       getOppositeExitPosition(busExitPosition),
@@ -191,13 +191,13 @@ export function Am62lFanoutCircuit({
       </breakout>
 
       <breakout
-        name="DRAM_FANOUT"
+        name="DRAM_TARGET_BOUNDARY"
         pcbX={lpddr4Placement.pcbX}
         pcbY={lpddr4Placement.pcbY}
         padding="3mm"
         routingDisabled
         fanoutRoutingLayers={[...FANOUT_ROUTING_LAYERS]}
-        busFanoutDirections={dramBusExitPositions}
+        busFanoutDirections={dramTargetExitPositions}
       >
         <Lpddr4 pcbX={0} pcbY={0} pcbRotation={lpddr4Placement.pcbRotation} />
       </breakout>

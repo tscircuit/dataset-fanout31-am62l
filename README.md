@@ -144,11 +144,13 @@ These budgets apply to the fanout benchmark, not board-level timing signoff.
 ## Fanout fixture scope
 
 The TSX describes actual SoC-to-RAM connectivity and requests boundary
-directions through `<breakout>` groups. Core's implicit winding
-solver places the `AutoplacedBreakoutPoint`s; the dataset captures the
-exact SoC `FanoutSolver` constructor arguments after that pass. Individual breakout-point
-coordinates are not supplied by the sample files. Each case is displayed
-through `GenericSolverDebugger` in the exported React Cosmos site.
+directions through one routed SoC `<breakout>`. A routing-disabled RAM target
+boundary gives core's implicit winding solver the opposite endpoint geometry;
+it does not instantiate or score a second `FanoutSolver`. The dataset captures
+exactly one SoC `FanoutSolver` constructor per case after core places the
+`AutoplacedBreakoutPoint`s. Individual breakout-point coordinates are not
+supplied by the sample files. Each case is displayed through
+`GenericSolverDebugger` in the exported React Cosmos site.
 
 These are SoC escape-routing fixtures. The scored routes end at the SoC
 breakout boundary, and board routing between the packages is disabled.
