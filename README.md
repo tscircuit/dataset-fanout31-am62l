@@ -1,10 +1,10 @@
 # dataset-fanout31-am62l
 
-Sixty TSX-generated BGA/QFP fanout problems: twelve AM62L, twelve
+Seventy-two TSX-generated BGA/QFP fanout problems: twelve AM62L, twelve
 Rockchip RK3308-to-DDR3L, twelve Canaan K230-to-LPDDR4, and twelve
-NXP i.MX 6ULL-to-DDR3L, plus twelve Allwinner T113-S3 all-pin configurations.
-The package name and existing IDs 01-48 remain stable. T113-S3 uses
-IDs 49-60 and separate exports.
+NXP i.MX 6ULL-to-DDR3L, twelve Allwinner T113-S3 all-pin configurations,
+and twelve TI AM3352BZCZD80 all-pin configurations. The package name and
+existing IDs 01-60 remain stable; AM3352 uses IDs 61-72 and separate exports.
 
 | Sample family | SoC package | Signal connections | Plane drops | Total connections | Buses | Physical pads |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
@@ -13,6 +13,7 @@ IDs 49-60 and separate exports.
 | K230, 25-36 | K230, 390 balls | 65 | 106 | 171 | 123 | 790 |
 | i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
 | T113-S3, 49-60 | T113-S3, 128 leads + EPAD | 106 | 22 | 128 | 60 | 235 |
+| AM3352, 61-72 | AM3352BZCZD80, 324 balls | 205 | 117 | 322 | 165 | 529 |
 
 The four RAM families cover all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
@@ -22,8 +23,9 @@ The four RAM families cover all twelve canonical directional edge positions in
 - majority down: bottom edge, right/center/left bands
 - majority left: left edge, bottom/center/top bands
 
-T113-S3 instead combines four package orientations and three band offsets,
-with bus-specific exits on all four edges in every case.
+T113-S3 and AM3352 combine four package orientations with three offsets
+(band offsets for T113-S3; terminal offsets for AM3352), with bus-specific
+exits on all four edges in every case.
 
 Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
@@ -257,7 +259,8 @@ sample IDs remain stable; their former directional suffixes now identify
 these orientation/offset cases rather than a single shared exit edge.
 
 The core default implicit placement pass exposes one edge per region.
-[`lib/t113s3-breakout-placement.ts`](lib/t113s3-breakout-placement.ts) uses
+[`lib/bus-edge-breakout-placement.ts`](lib/bus-edge-breakout-placement.ts),
+shared by T113-S3 and AM3352, uses
 core's supported `implicitBreakoutPointSolverFn` callback to partition buses
 by edge and run the **same pinned winding solver** on each partition. It
 preserves differential pairs, rejects missing/duplicate endpoints, and
@@ -270,6 +273,80 @@ board routing remain disabled. The board is 48 x 48 mm. Through vias use
 
 Regenerate the overview with `bun scripts/generate-t113s3-preview.ts`.
 Run this family with `bun run solve-count --chip t113s3`.
+
+## TI AM3352BZCZD80: every operational ball
+
+![Twelve AM3352 all-pin placements](docs/am3352-placements.svg)
+
+[AM3352BZCZD80](https://www.ti.com/product/AM3352/part-details/AM3352BZCZD80)
+uses the **ZCZ 324-ball NFBGA**, 15 × 15 mm body and 0.8 mm pitch.
+[`lib/am3352-pin-map.ts`](lib/am3352-pin-map.ts) records the complete
+ZCZ map from TI's [SPRS717L datasheet, March 2020](https://www.ti.com/lit/ds/symlink/am3352.pdf),
+section 4.1.2, pages 15–17. The footprint is a top PCB view with A1 at the
+upper left and 0.4 mm circular lands. The 298-ball ZCE map is not used.
+
+All 324 balls remain physical obstacles. **A3/RESERVED is do-not-connect**
+(Table 4-2, note 3), and **M5/VPP is NC during functional operation**
+(section 5.1, note 5). The other 322 balls each have exactly one connection:
+205 independent external endpoints and 117 supply/ground/strap drops.
+
+The ten-layer fixture uses six non-overlapping, unlike-net plane layers:
+
+| Plane | Voltage | Layer | Balls | Assignment |
+| --- | ---: | --- | ---: | --- |
+| GND | 0 V | inner1 | 44 | VSS, VSSA_ADC/USB, VSS_OSC/RTC, RTC_KALDO_ENn |
+| VCC_IO_3V3 | 3.3 V | inner2 | 21 | VDDSHV1–6 and VDDA3P3V_USB0/1 |
+| VCC_1V8 | 1.8 V | inner3 | 17 | VDDS, RTC, SRAM LDO inputs, PLL, oscillator, ADC and USB 1.8 V supplies |
+| VCC_DDR_1V5 | 1.5 V | inner4 | 7 | VDDS_DDR, configured for DDR3 |
+| VDD_CORE_1V1 | 1.1 V | inner5 | 20 | VDD_CORE, OPP100 |
+| VDD_MPU_1V26 | 1.26 V | inner6 | 8 | VDD_MPU plus VDD_MPU_MON, Turbo/800 MHz |
+
+Sections 5.4–5.5 specify these operating voltages for revision B. MPU and
+core remain separate; VDD_MPU_MON joins MPU because remote Kelvin sensing
+is not used (Table 4-2, note 31). RTC_KALDO_ENn is grounded to enable the
+internal RTC LDO. Its CAP_VDD_RTC output, CAP_VDD_SRAM_CORE,
+CAP_VDD_SRAM_MPU, and CAP_VBB_MPU each have an independent endpoint for
+external decoupling, as required by section 5.9.2; they never join a supply
+plane. DDR_VREF (0.75 V for this DDR3 setup), DDR_VTP (external 49.9 Ω
+calibration resistor), ADC references, USB VBUS/ID/charger control and
+oscillator pins also remain independent. USB ID is a role strap, never
+an externally driven supply input.
+
+The source breakout has **5 mm padding** around its 14 × 14 mm pad extent,
+producing a 24 × 24 mm boundary. Signal routing uses top, inner7, inner8,
+and bottom; plane layers are excluded from signal routing. At 0°:
+
+| Edge | Main groups |
+| --- | --- |
+| Left | DDR address/control, clock and two byte lanes |
+| Bottom | LCD/SYSBOOT, all GPMC address/data/control groups |
+| Right | Ethernet, MMC0 and USB |
+| Top | SPI0, I2C0, UART0/1, McASP0, JTAG and ADC |
+
+Auxiliary pins use their nearest edge. Groups represent physical mode-0
+pin names, not simultaneous alternate mux functions. Five differential
+pairs preserve DDR clock, both DQS pairs and both USB pairs. DDR length
+skews are benchmark constraints, not complete board timing sign-off.
+
+The twelve fixtures combine four rotations with three terminal offsets.
+Each bus keeps its natural exit band; terminal pads form contiguous bus
+blocks in logical bit order, with adjacent differential pairs. Package,
+bus edges and terminal banks rotate together. Four
+independent terminal banks sit 25 mm from the origin on a 64 × 64 mm board,
+with 0.5 mm pitch and transverse shifts of -0.75/0/+0.75 mm. The shared
+winding callback places boundary points on each declared edge. Through
+vias use 0.24 mm lands and 0.10 mm holes; blind/buried and via-in-pad
+routing are disabled.
+
+Only the SoC escape is routed. External endpoints provide connectivity
+and direction, not an implemented RAM, crystal or decoupling circuit.
+Power sequencing, supply filtering/noise verification, boot straps and
+peripheral mux programming are outside the fixture. In particular, the
+MPU Turbo voltage represents the operating point, not the reset startup
+voltage; section 5.5 requires OPP100 before release from reset.
+
+Regenerate the overview with `bun scripts/generate-am3352-preview.ts`.
+Run these samples with `bun run solve-count --chip am3352`.
 
 ## Fanout fixture scope
 
@@ -284,7 +361,7 @@ These are SoC escape-routing fixtures. The scored signal routes end at the SoC
 breakout boundary, and board routing between the packages is disabled.
 They do not model a complete working board. The RAM families omit other
 SoC interfaces, analog grounds/supplies, and RAM power/reference connections.
-T113-S3 includes every non-NC external pin as described above. External
+T113-S3 and AM3352 include every operational external pin as described above. External
 decoupling, termination, and power-generation circuitry are outside all
 these escape-routing workloads.
 
@@ -307,7 +384,7 @@ bun run build:site
 ```
 
 `solve-count` reports the measured solver success count with a 60-second
-timeout per sample in a family run. With no arguments it runs all 60
+timeout per sample in a family run. With no arguments it runs all 72
 samples; use `--chip` to select a family:
 
 ```sh
@@ -317,6 +394,7 @@ bun run solve-count --chip rk3308
 bun run solve-count --chip k230
 bun run solve-count --chip imx6ull
 bun run solve-count --chip t113s3
+bun run solve-count --chip am3352
 bun run solve-count --sample 13-rk3308-top-left-offset
 bun run solve-count --sample 25-k230-top-left-offset
 ```
@@ -324,4 +402,4 @@ bun run solve-count --sample 25-k230-top-left-offset
 `FANOUT_SAMPLE_TIMEOUT_MS` overrides the timeout for family runs. A
 `--sample` invocation runs directly and returns one JSON result. Legacy
 exit selectors such as `--sample topside_left` still select AM62L unless
-`--chip rk3308`, `--chip k230`, `--chip imx6ull`, or `--chip t113s3` is supplied.
+`--chip rk3308`, `--chip k230`, `--chip imx6ull`, `--chip t113s3`, or `--chip am3352` is supplied.
