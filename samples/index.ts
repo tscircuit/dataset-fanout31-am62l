@@ -1,3 +1,52 @@
+import {
+  createSample as createAm3352_61,
+  exitPosition as exitAm3352_61,
+} from "./61-am3352-top-left-offset"
+import {
+  createSample as createAm3352_62,
+  exitPosition as exitAm3352_62,
+} from "./62-am3352-top-center"
+import {
+  createSample as createAm3352_63,
+  exitPosition as exitAm3352_63,
+} from "./63-am3352-top-right-offset"
+import {
+  createSample as createAm3352_64,
+  exitPosition as exitAm3352_64,
+} from "./64-am3352-right-top-offset"
+import {
+  createSample as createAm3352_65,
+  exitPosition as exitAm3352_65,
+} from "./65-am3352-right-center"
+import {
+  createSample as createAm3352_66,
+  exitPosition as exitAm3352_66,
+} from "./66-am3352-right-bottom-offset"
+import {
+  createSample as createAm3352_67,
+  exitPosition as exitAm3352_67,
+} from "./67-am3352-bottom-right-offset"
+import {
+  createSample as createAm3352_68,
+  exitPosition as exitAm3352_68,
+} from "./68-am3352-bottom-center"
+import {
+  createSample as createAm3352_69,
+  exitPosition as exitAm3352_69,
+} from "./69-am3352-bottom-left-offset"
+import {
+  createSample as createAm3352_70,
+  exitPosition as exitAm3352_70,
+} from "./70-am3352-left-bottom-offset"
+import {
+  createSample as createAm3352_71,
+  exitPosition as exitAm3352_71,
+} from "./71-am3352-left-center"
+import {
+  createSample as createAm3352_72,
+  exitPosition as exitAm3352_72,
+} from "./72-am3352-left-top-offset"
+import { getAm3352FanoutDirectionCase } from "../lib/am3352-fanout-directions"
 import { getFanoutDirectionCase } from "../lib/fanout-directions"
 import { getK230FanoutDirectionCase } from "../lib/k230-fanout-directions"
 import { getRk3308FanoutDirectionCase } from "../lib/rk3308-fanout-directions"
@@ -333,6 +382,21 @@ export const T113S3_SAMPLE_DEFINITIONS = [
   { exitPosition: exitT113s3_60, createSample: createT113s3_60 },
 ] as const
 
+export const AM3352_SAMPLE_DEFINITIONS = [
+  { exitPosition: exitAm3352_61, createSample: createAm3352_61 },
+  { exitPosition: exitAm3352_62, createSample: createAm3352_62 },
+  { exitPosition: exitAm3352_63, createSample: createAm3352_63 },
+  { exitPosition: exitAm3352_64, createSample: createAm3352_64 },
+  { exitPosition: exitAm3352_65, createSample: createAm3352_65 },
+  { exitPosition: exitAm3352_66, createSample: createAm3352_66 },
+  { exitPosition: exitAm3352_67, createSample: createAm3352_67 },
+  { exitPosition: exitAm3352_68, createSample: createAm3352_68 },
+  { exitPosition: exitAm3352_69, createSample: createAm3352_69 },
+  { exitPosition: exitAm3352_70, createSample: createAm3352_70 },
+  { exitPosition: exitAm3352_71, createSample: createAm3352_71 },
+  { exitPosition: exitAm3352_72, createSample: createAm3352_72 },
+] as const
+
 export const FANOUT_SAMPLE_DEFINITIONS = [
   ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
     ...definition,
@@ -358,6 +422,11 @@ export const FANOUT_SAMPLE_DEFINITIONS = [
     ...definition,
     id: getT113s3FanoutDirectionCase(definition.exitPosition).id,
     chip: "t113s3" as const,
+  })),
+  ...AM3352_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    id: getAm3352FanoutDirectionCase(definition.exitPosition).id,
+    chip: "am3352" as const,
   })),
 ] as const
 

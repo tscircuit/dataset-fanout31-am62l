@@ -62,15 +62,13 @@ test("edge-partitioned winding honors each bus despite core's single preferred e
 })
 
 test("edge partitioning rejects incomplete declarations and split differential pairs", () => {
-  expect(() => createT113s3BreakoutPlacement({})(input)).toThrow(
-    "Missing T113-S3 edge",
-  )
+  expect(() => createT113s3BreakoutPlacement({})(input)).toThrow("Missing edge")
   expect(() =>
     createT113s3BreakoutPlacement(exits)({
       ...input,
       buses: input.buses.filter((b) => b.busId !== "left"),
     }),
-  ).toThrow("Incomplete T113-S3 boundary placement")
+  ).toThrow("Incomplete boundary placement")
   expect(() =>
     createT113s3BreakoutPlacement(exits)({
       ...input,
