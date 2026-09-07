@@ -1,15 +1,17 @@
 # dataset-fanout31-am62l
 
-Thirty-six TSX-generated BGA fanout problems: twelve AM62L, twelve
-Rockchip RK3308-to-DDR3L, and twelve Canaan K230-to-LPDDR4 configurations.
-The package name and existing IDs 01-24 remain stable. K230 uses IDs 25-36
-and separate exports.
+Forty-eight TSX-generated BGA fanout problems: twelve AM62L, twelve
+Rockchip RK3308-to-DDR3L, twelve Canaan K230-to-LPDDR4, and twelve
+NXP i.MX 6ULL-to-DDR3L configurations.
+The package name and existing IDs 01-36 remain stable. i.MX 6ULL uses
+IDs 37-48 and separate exports.
 
 | Sample family | SoC package | Signal connections | Plane drops | Total connections | Buses | Physical pads |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | AM62L, 01-12 | AM62L32BOGHAANBR, 373 balls | 33 | 102 | 135 | 111 | 573 |
 | RK3308, 13-24 | RK3308, 355 balls | 49 | 113 | 162 | 122 | 451 |
 | K230, 25-36 | K230, 390 balls | 65 | 106 | 171 | 123 | 790 |
+| i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
 
 Each family covers all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
@@ -141,6 +143,41 @@ vias are disabled. As with the RK3308 fixtures, skew budgets are 8 mm for
 data bytes, 15 mm for command/control, and 0.25 mm for differential pairs.
 These budgets apply to the fanout benchmark, not board-level timing signoff.
 
+## NXP i.MX 6ULL and DDR3L
+
+![Twelve i.MX 6ULL to DDR3L package placements](docs/imx6ull-placements.svg)
+
+The [JLCPCB C414042 part](https://jlcpcb.com/partdetail/MCIMX6Y2CVM08AB/C414042)
+is NXP `MCIMX6Y2CVM08AB`, an i.MX 6ULL in the 14 x 14 mm,
+0.8 mm-pitch MAPBGA289 package. It has a fully populated 17 x 17 grid.
+The complete ball map in [`lib/imx6ull-ball-map.ts`](lib/imx6ull-ball-map.ts)
+follows NXP's [IMX6ULLIEC Rev. 1.2, November 2017](https://www.nxp.com/assets/documents/data/en/data-sheets/IMX6ULLIEC.pdf),
+Table 1 and Figure 70 / Tables 90-92 (printed pages 112-124). Coordinates
+use the top PCB view, A1 upper left. All 289 pads remain obstacles; circular
+0.40 mm copper lands are a dataset choice, distinct from the specified
+0.35-0.45 mm solder-ball diameter.
+
+The family reuses the Samsung `K4B4G1646E-BYMA` 4 Gb x16 DDR3L fixture
+described above. All 49 connections preserve logical bit numbers and
+polarity: 16 data, 15 address, three bank-address, two masks, four strobe,
+two clock, and seven control/reset wires. These form nine signal buses
+and three differential pairs. The unused rank-one controls (`CS1_B`,
+`SDCKE1`, `ODT1`) and A15 remain obstacles. ZQ calibration, VREF,
+`NVCC_DRAM_2P5`, and `NGND_KEL0` are outside the signal/plane-drop fixture.
+The 47 `VSS` balls drop to `inner1`; the six `NVCC_DRAM` balls drop to
+`inner2`. This gives 102 connections, 62 buses, and 385 physical pads.
+
+RAM placement, eight-layer routing rules, 3.5 mm breakout padding, and
+benchmark skew budgets follow the RK3308 family. RAM moves 18 mm toward
+each side with -6/0/+6 mm offsets and rotates 90 degrees at the top/bottom.
+The 24-wire address/control bus stays centered; other buses shift with
+the selected band. These fixtures score SoC escape routes, with full
+board routing disabled; they do not provide DDR timing signoff or a
+complete powered board.
+
+Regenerate the overview with `bun scripts/generate-imx6ull-preview.ts`.
+Run this family with `bun run solve-count --chip imx6ull`.
+
 ## Fanout fixture scope
 
 The TSX describes actual SoC-to-RAM connectivity and requests boundary
@@ -175,7 +212,7 @@ bun run build:site
 ```
 
 `solve-count` reports the measured solver success count with a 60-second
-timeout per sample in a family run. With no arguments it runs all 36
+timeout per sample in a family run. With no arguments it runs all 48
 samples; use `--chip` to select a family:
 
 ```sh
@@ -183,6 +220,7 @@ bun run solve-count
 bun run solve-count --chip am62l
 bun run solve-count --chip rk3308
 bun run solve-count --chip k230
+bun run solve-count --chip imx6ull
 bun run solve-count --sample 13-rk3308-top-left-offset
 bun run solve-count --sample 25-k230-top-left-offset
 ```
@@ -190,4 +228,4 @@ bun run solve-count --sample 25-k230-top-left-offset
 `FANOUT_SAMPLE_TIMEOUT_MS` overrides the timeout for family runs. A
 `--sample` invocation runs directly and returns one JSON result. Legacy
 exit selectors such as `--sample topside_left` still select AM62L unless
-`--chip rk3308` or `--chip k230` is supplied.
+`--chip rk3308`, `--chip k230`, or `--chip imx6ull` is supplied.
