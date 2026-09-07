@@ -1,5 +1,7 @@
+import { createT113s3BreakoutPlacement } from "./t113s3-breakout-placement"
 import type {
   FanoutExitPosition,
+  FanoutEdge,
   FanoutSolver,
   FanoutSolverOptions,
 } from "@tscircuit/fanout-solver"
@@ -21,14 +23,14 @@ import {
   type T113s3FanoutDirectionCase,
 } from "./t113s3-fanout-directions"
 import { T113s3 } from "./t113s3-footprint"
-import { T113s3Targets } from "./t113s3-targets"
+import { T113s3Targets, T113S3_TARGET_EDGES } from "./t113s3-targets"
 
 export const T113S3_COMPLETE_CONNECTION_COUNT = 128
 export const T113S3_COMPLETE_BUS_COUNT = 60
 export const T113S3_COMPLETE_OBSTACLE_COUNT = 235
 export const T113S3_SIGNAL_CONNECTION_COUNT = 106
 export const T113S3_PLANE_DROP_COUNT = 22
-export const T113S3_BREAKOUT_PADDING = 14
+export const T113S3_BREAKOUT_PADDING = 2
 
 type BoundaryExitPosition = Exclude<FanoutExitPosition, "center">
 export interface T113s3FanoutSample {
@@ -46,17 +48,17 @@ export function getT113s3SignalBusExitPosition(
 ): BoundaryExitPosition {
   const bus = T113S3_SIGNAL_BUSES.find((b) => b.name === busName)
   if (!bus) throw new Error(`Unknown T113-S3 bus ${busName}`)
-  // Cycle all three bands rather than collapsing two bands into a corner.
-  // Every non-plane net escapes on the selected edge; the three layouts keep
-  // the 106 terminals distributed so the winding pass has enough exit space.
-  const band = (bus.baseBand + directionCase.bandShift + 4) % 3
+  // Stay on the bus's natural edge; vary only its band and package orientation.
+  const band =
+    Math.max(-1, Math.min(1, bus.baseBand + directionCase.bandShift)) + 1
+  const edge = rotateT113s3Edge(bus.exitEdge, directionCase.pcbRotation)
   const positions = {
     top: ["topside_left", "topside_center", "topside_right"],
     right: ["rightside_top", "rightside_center", "rightside_bottom"],
     bottom: ["bottomside_right", "bottomside_center", "bottomside_left"],
     left: ["leftside_bottom", "leftside_center", "leftside_top"],
   } as const
-  return positions[directionCase.exitEdge][band]!
+  return positions[edge][band]!
 }
 const signalBusPositions = (directionCase: T113s3FanoutDirectionCase) =>
   Object.fromEntries(
@@ -65,19 +67,37 @@ const signalBusPositions = (directionCase: T113s3FanoutDirectionCase) =>
       getT113s3SignalBusExitPosition(directionCase, bus.name),
     ]),
   )
+export function rotateT113s3Edge(
+  edge: FanoutEdge,
+  rotation: number,
+): FanoutEdge {
+  const edges = ["top", "left", "bottom", "right"] as const
+  return edges[(edges.indexOf(edge) + rotation / 90) % 4]!
+}
 export function getT113s3TargetPlacement(
   directionCase: T113s3FanoutDirectionCase,
+  edge: FanoutEdge,
 ) {
-  const offset = directionCase.bandShift * 8
-  switch (directionCase.exitEdge) {
-    case "top":
-      return { pcbX: offset, pcbY: 40, pcbRotation: 0 }
-    case "right":
-      return { pcbX: 40, pcbY: -offset, pcbRotation: 90 }
-    case "bottom":
-      return { pcbX: -offset, pcbY: -40, pcbRotation: 0 }
-    case "left":
-      return { pcbX: -40, pcbY: offset, pcbRotation: 90 }
+  const offset = directionCase.bandShift * 0.75
+  const base = {
+    top: { x: offset, y: 18, rotation: 0 },
+    right: { x: 18, y: -offset, rotation: 90 },
+    bottom: { x: -offset, y: -18, rotation: 0 },
+    left: { x: -18, y: offset, rotation: 90 },
+  }[edge]
+  const rotation = directionCase.pcbRotation
+  const point =
+    rotation === 90
+      ? { x: -base.y, y: base.x }
+      : rotation === 180
+        ? { x: -base.x, y: -base.y }
+        : rotation === 270
+          ? { x: base.y, y: -base.x }
+          : base
+  return {
+    pcbX: point.x,
+    pcbY: point.y,
+    pcbRotation: (base.rotation + rotation) % 360,
   }
 }
 const oppositeExit = (position: BoundaryExitPosition): BoundaryExitPosition => {
@@ -100,14 +120,13 @@ export function T113s3FanoutCircuit({
   const targetExits = Object.fromEntries(
     Object.entries(exits).map(([name, exit]) => [name, oppositeExit(exit)]),
   )
-  const placement = getT113s3TargetPlacement(directionCase)
   const planeMap = Object.fromEntries(
     T113S3_POWER_PLANES.map((p) => [p.layer, p.netName]),
   )
   return (
     <board
-      width="112mm"
-      height="112mm"
+      width="48mm"
+      height="48mm"
       layers={8}
       defaultTraceWidth="0.08128mm"
       minTraceWidth="0.08128mm"
@@ -133,12 +152,15 @@ export function T113s3FanoutCircuit({
       <breakout
         name="SOC_FANOUT"
         padding={T113S3_BREAKOUT_PADDING}
-        autorouter="fanout"
+        autorouter={{
+          preset: "fanout",
+          implicitBreakoutPointSolverFn: createT113s3BreakoutPlacement(exits),
+        }}
         fanoutRoutingLayers={[...T113S3_ROUTING_LAYERS]}
         fanoutPourNetMap={planeMap}
         busFanoutDirections={exits}
       >
-        <T113s3 />
+        <T113s3 pcbRotation={directionCase.pcbRotation} />
         {T113S3_PLANE_DROPS.map((drop) => (
           <Fragment key={drop.traceName}>
             <trace
@@ -149,17 +171,30 @@ export function T113s3FanoutCircuit({
           </Fragment>
         ))}
       </breakout>
-      <breakout
-        name="EXTERNAL_TERMINALS"
-        pcbX={placement.pcbX}
-        pcbY={placement.pcbY}
-        padding="2mm"
-        routingDisabled
-        fanoutRoutingLayers={[...T113S3_ROUTING_LAYERS]}
-        busFanoutDirections={targetExits}
-      >
-        <T113s3Targets pcbRotation={placement.pcbRotation} />
-      </breakout>
+      {T113S3_TARGET_EDGES.map((edge) => {
+        const placement = getT113s3TargetPlacement(directionCase, edge)
+        const directions = Object.fromEntries(
+          T113S3_SIGNAL_BUSES.filter((b) => b.exitEdge === edge).map((b) => [
+            b.name,
+            targetExits[b.name]!,
+          ]),
+        )
+        return (
+          <Fragment key={edge}>
+            <breakout
+              name={`TERMINALS_${edge}`}
+              pcbX={placement.pcbX}
+              pcbY={placement.pcbY}
+              padding="1mm"
+              routingDisabled
+              fanoutRoutingLayers={[...T113S3_ROUTING_LAYERS]}
+              busFanoutDirections={directions}
+            >
+              <T113s3Targets edge={edge} pcbRotation={placement.pcbRotation} />
+            </breakout>
+          </Fragment>
+        )
+      })}
       {T113S3_SIGNAL_BUSES.map((bus) => (
         <Fragment key={bus.name}>
           <bus
@@ -185,7 +220,7 @@ export function T113s3FanoutCircuit({
           <trace
             name={connection.traceName}
             from={`.U1 > .pin${connection.pinNumber}`}
-            to={`.J1 > .pin${connection.pinNumber}`}
+            to={`.J_${connection.targetEdge} > .pin${connection.pinNumber}`}
           />
         </Fragment>
       ))}

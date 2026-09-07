@@ -11,6 +11,7 @@ export function T113s3FanoutDebugger({
       chipName="Allwinner T113-S3"
       ballCount={129}
       packageLabel="128 pins + exposed pad ·"
+      directionLabel="bus exits on all four edges"
       signalLabel="signal/reference/regulator-output connections"
     />
   )

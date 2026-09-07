@@ -19,13 +19,14 @@ export const T113S3_PAD_POSITIONS = T113S3_PINS.map((pin) => {
   return { ...pin, ...positions[side]! }
 })
 
-export function T113s3() {
+export function T113s3({ pcbRotation = 0 }: { pcbRotation?: number }) {
   return (
     <chip
       name="U1"
       manufacturerPartNumber="T113-S3"
       pcbX={0}
       pcbY={0}
+      pcbRotation={pcbRotation}
       footprint={
         <footprint>
           {T113S3_PAD_POSITIONS.map((p) => (

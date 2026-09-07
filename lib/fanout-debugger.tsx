@@ -22,12 +22,14 @@ export function FanoutDebugger({
   ballCount,
   packageLabel,
   signalLabel = "DDR signals",
+  directionLabel,
 }: {
   createSample: () => Promise<FanoutDebuggerSample>
   chipName: string
   ballCount: number
   packageLabel?: string
   signalLabel?: string
+  directionLabel?: string
 }) {
   const [sample, setSample] = useState<FanoutDebuggerSample>()
   const [loadError, setLoadError] = useState<string>()
@@ -138,9 +140,10 @@ export function FanoutDebugger({
               textTransform: "uppercase",
             }}
           >
-            majority {sample.directionCase.majorityDirection}
+            {directionLabel ??
+              `majority ${sample.directionCase.majorityDirection}`}
           </span>
-          <code>{sample.directionCase.exitPosition}</code>
+          {!directionLabel && <code>{sample.directionCase.exitPosition}</code>}
           <span style={{ color: "#475569" }}>{sample.description}</span>
         </div>
 

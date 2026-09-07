@@ -18,20 +18,26 @@ type Obstacle = RouteJson["obstacles"][number] & {
 type Connection = RouteJson["connections"][number] & {
   source_trace_id?: string
 }
-const placements = [
-  [-8, 40, 0],
-  [0, 40, 0],
-  [8, 40, 0],
-  [40, 8, 90],
-  [40, 0, 90],
-  [40, -8, 90],
-  [8, -40, 0],
-  [0, -40, 0],
-  [-8, -40, 0],
-  [-40, -8, 90],
-  [-40, 0, 90],
-  [-40, 8, 90],
-] as const
+const rotate = (x: number, y: number, rotation: number) =>
+  rotation === 90
+    ? { x: -y, y: x }
+    : rotation === 180
+      ? { x: -x, y: -y }
+      : rotation === 270
+        ? { x: y, y: -x }
+        : { x, y }
+const naturalEdges: Record<string, string> = {
+  GPIOB: "right",
+  GPIOC: "left",
+  GPIOD_0_9: "bottom",
+  GPIOD_10_22: "right",
+  GPIOE: "bottom",
+  GPIOF: "left",
+  GPIOG: "top",
+  USB0: "top",
+  USB1: "top",
+  MICIN3: "right",
+}
 const expectPoint = (
   actual: { x: number; y: number },
   x: number,
@@ -52,12 +58,16 @@ test("all 12 T113-S3 captures escape every non-NC lead and drop each supply/grou
     expect(srj.connections).toHaveLength(128)
     expect(srj.obstacles).toHaveLength(235)
     expect(srj.layerCount).toBe(8)
-    expect(options.sharedBoundary).toEqual({
-      minX: -22.45,
-      maxX: 22.45,
-      minY: -22.45,
-      maxY: 22.45,
-    })
+    for (const [key, value] of Object.entries({
+      minX: -10.45,
+      maxX: 10.45,
+      minY: -10.45,
+      maxY: 10.45,
+    })) {
+      expect(
+        options.sharedBoundary?.[key as "minX" | "maxX" | "minY" | "maxY"],
+      ).toBeCloseTo(value, 8)
+    }
     expect(options.escapeLayers).toEqual(["top", "inner6", "bottom"])
     const buses = options.buses ?? []
     expect(buses).toHaveLength(60)
@@ -73,9 +83,9 @@ test("all 12 T113-S3 captures escape every non-NC lead and drop each supply/grou
       srj.obstacles as Obstacle[],
       (p) => p.componentId,
     )
-    expect(groups.size).toBe(2)
+    expect(groups.size).toBe(5)
     const soc = [...groups.values()].find((p) => p.length === 129)!
-    const targets = [...groups.values()].find((p) => p.length === 106)!
+    const targets = [...groups.values()].filter((p) => p.length !== 129).flat()
     expect(soc).toHaveLength(129)
     expect(targets).toHaveLength(106)
     const socByPin = new Map(
@@ -84,21 +94,32 @@ test("all 12 T113-S3 captures escape every non-NC lead and drop each supply/grou
     const targetsByPin = new Map(
       targets.map((p) => [p.circuitJsonMetadata?.source_port_name, p]),
     )
+    const rotation = [0, 270, 180, 90][Math.floor(index / 3)]!
     for (const pad of T113S3_PAD_POSITIONS) {
       const obstacle = socByPin.get(`pin${pad.pinNumber}`)!
-      expectPoint(obstacle.center, pad.x, pad.y)
-      expect(obstacle.width).toBeCloseTo(pad.width, 8)
-      expect(obstacle.height).toBeCloseTo(pad.height, 8)
+      const point = rotate(pad.x, pad.y, rotation)
+      expectPoint(obstacle.center, point.x, point.y)
+      expect(obstacle.width).toBeCloseTo(
+        rotation % 180 === 0 ? pad.width : pad.height,
+        8,
+      )
+      expect(obstacle.height).toBeCloseTo(
+        rotation % 180 === 0 ? pad.height : pad.width,
+        8,
+      )
       expect(obstacle.layers).toEqual(["top"])
     }
-    const [x, y, rotation] = placements[index]!
+    const offset = ((index % 3) - 1) * 0.75
     for (const pad of T113S3_TARGET_PADS) {
+      const base = {
+        top: { x: pad.x + offset, y: 18 },
+        right: { x: 18, y: pad.x - offset },
+        bottom: { x: pad.x - offset, y: -18 },
+        left: { x: -18, y: pad.x + offset },
+      }[pad.edge]
+      const point = rotate(base.x, base.y, rotation)
       const obstacle = targetsByPin.get(`pin${pad.pinNumber}`)!
-      expectPoint(
-        obstacle.center,
-        x + (rotation === 90 ? -pad.y : pad.x),
-        y + (rotation === 90 ? pad.x : pad.y),
-      )
+      expectPoint(obstacle.center, point.x, point.y)
     }
     const connectionForPin = (pinNumber: number) => {
       const pad = socByPin.get(`pin${pinNumber}`)!
@@ -139,9 +160,14 @@ test("all 12 T113-S3 captures escape every non-NC lead and drop each supply/grou
       const bus = signals.find((b) => b.busId === definition.name)!
       expect(bus.allowedLayers).toEqual(["top", "inner6", "bottom"])
       expect(bus.exitPosition).toBe(s.signalBusExitPositions[definition.name])
-      expect(
-        bus.exitPosition?.startsWith(`${s.directionCase.exitEdge}side_`),
-      ).toBe(true)
+      const baseEdge =
+        naturalEdges[definition.name] ??
+        ["left", "bottom", "right", "top"][
+          Math.floor((definition.pins[0]! - 1) / 32)
+        ]!
+      const edgeOrder = ["top", "left", "bottom", "right"]
+      const edge = edgeOrder[(edgeOrder.indexOf(baseEdge) + rotation / 90) % 4]!
+      expect(bus.exitPosition?.startsWith(`${edge}side_`)).toBe(true)
       expect(new Set(bus.connectionNames)).toEqual(
         new Set(definition.connections.map((c) => traceMap.get(c)!)),
       )
@@ -150,16 +176,15 @@ test("all 12 T113-S3 captures escape every non-NC lead and drop each supply/grou
       )
       for (const target of Object.values(bus.connectionExitTargets ?? {})) {
         expect(bus.allowedLayers).toContain(target.layer)
-        if (s.directionCase.exitEdge === "top")
-          expect(target.y).toBeGreaterThan(22.45)
-        if (s.directionCase.exitEdge === "right")
-          expect(target.x).toBeGreaterThan(22.45)
-        if (s.directionCase.exitEdge === "bottom")
-          expect(target.y).toBeLessThan(-22.45)
-        if (s.directionCase.exitEdge === "left")
-          expect(target.x).toBeLessThan(-22.45)
+        if (edge === "top") expect(target.y).toBeGreaterThan(10.45)
+        if (edge === "right") expect(target.x).toBeGreaterThan(10.45)
+        if (edge === "bottom") expect(target.y).toBeLessThan(-10.45)
+        if (edge === "left") expect(target.x).toBeLessThan(-10.45)
       }
     }
+    expect(
+      new Set(signals.map((b) => b.exitPosition?.split("side_")[0])).size,
+    ).toBe(4)
     expect(srj.differentialPairs).toHaveLength(3)
     for (const pair of T113S3_DIFFERENTIAL_PAIRS)
       expect(srj.differentialPairs).toContainEqual({

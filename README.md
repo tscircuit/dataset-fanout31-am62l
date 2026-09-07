@@ -14,13 +14,16 @@ IDs 49-60 and separate exports.
 | i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
 | T113-S3, 49-60 | T113-S3, 128 leads + EPAD | 106 | 22 | 128 | 60 | 235 |
 
-Each family covers all twelve canonical directional edge positions in
+The four RAM families cover all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
 
 - majority up: top edge, left/center/right bands
 - majority right: right edge, top/center/bottom bands
 - majority down: bottom edge, right/center/left bands
 - majority left: left edge, bottom/center/top bands
+
+T113-S3 instead combines four package orientations and three band offsets,
+with bus-specific exits on all four edges in every case.
 
 Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
@@ -233,14 +236,37 @@ assumed, so alternative LVDS/DSI/RGB assignments are not simultaneously
 wired. A 0.25 mm skew budget on the three fixed pairs is a benchmark
 constraint, not interface timing signoff.
 
-The SoC stays at the origin; a two-row, 0.8 mm-pitch terminal bank moves
-40 mm to the selected side and -8/0/+8 mm along it. It rotates 90 degrees
-for left/right placements. The SoC breakout uses 14 mm padding to provide
-space for 106 exits, and buses cycle through the three bands along the
-selected edge. Core supplies all boundary coordinates. Only the SoC fanout
-is routed; the external-terminal breakout and subsequent board routing
-are disabled. Through vias use 0.24 mm lands and 0.10 mm holes, with
-via-in-pad and blind/buried vias disabled.
+The SoC remains centered, with **2 mm fanout padding** and a
+20.9 x 20.9 mm breakout boundary. Each bus uses an edge near its physical
+pins, instead of sending all 106 external connections to one side:
+
+| Buses | Natural exit edge (0° package orientation) |
+| --- | --- |
+| GPIOC, GPIOF | Left |
+| GPIOE, GPIOD 0-9 | Bottom |
+| GPIOB, GPIOD 10-22, MICIN3 | Right |
+| GPIOG, USB0, USB1 | Top |
+| Individual reference/clock/analog pins | Their package side |
+
+Four independent terminal banks sit 18 mm from the origin, using 0.5 mm
+pad pitch. The twelve samples combine package rotations of 0°, 270°, 180°,
+and 90° with three band offsets. Package, bus exits, and terminal banks
+rotate together, so every sample keeps its bus-specific escape directions.
+The terminal banks shift by -0.75/0/+0.75 mm along their sides. Existing
+sample IDs remain stable; their former directional suffixes now identify
+these orientation/offset cases rather than a single shared exit edge.
+
+The core default implicit placement pass exposes one edge per region.
+[`lib/t113s3-breakout-placement.ts`](lib/t113s3-breakout-placement.ts) uses
+core's supported `implicitBreakoutPointSolverFn` callback to partition buses
+by edge and run the **same pinned winding solver** on each partition. It
+preserves differential pairs, rejects missing/duplicate endpoints, and
+lets the winding solver choose point coordinates, ordering, and layers.
+The exact resulting SoC fanout input is still captured from core.
+
+Only the SoC fanout is routed; external-terminal breakouts and subsequent
+board routing remain disabled. The board is 48 x 48 mm. Through vias use
+0.24 mm lands and 0.10 mm holes, with via-in-pad and blind/buried vias disabled.
 
 Regenerate the overview with `bun scripts/generate-t113s3-preview.ts`.
 Run this family with `bun run solve-count --chip t113s3`.
@@ -254,7 +280,7 @@ exact SoC `FanoutSolver` constructor arguments after that pass. Individual break
 coordinates are not supplied by the sample files. Each case is displayed
 through `GenericSolverDebugger` in the exported React Cosmos site.
 
-These are SoC escape-routing fixtures. The scored routes end at the SoC
+These are SoC escape-routing fixtures. The scored signal routes end at the SoC
 breakout boundary, and board routing between the packages is disabled.
 They do not model a complete working board. The RAM families omit other
 SoC interfaces, analog grounds/supplies, and RAM power/reference connections.

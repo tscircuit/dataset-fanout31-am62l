@@ -1,3 +1,4 @@
+import type { FanoutEdge } from "@tscircuit/fanout-solver"
 import { T113S3_PINS, T113S3_NC_PIN } from "./t113s3-pin-map"
 
 /** External-supply fixture; Table 5-2 recommended operating conditions.
@@ -51,44 +52,87 @@ interface SignalBusGroup {
   name: string
   pins: number[]
   baseBand: number
+  exitEdge: FanoutEdge
   maxLengthSkew?: number
 }
 const groupedBuses: SignalBusGroup[] = [
-  { name: "GPIOB", pins: [86, 85, 84, 82, 80, 79], baseBand: -1 },
-  { name: "GPIOC", pins: [19, 18, 17, 16, 15, 14], baseBand: 0 },
+  {
+    name: "GPIOB",
+    pins: [86, 85, 84, 82, 80, 79],
+    baseBand: 0,
+    exitEdge: "right",
+  },
+  {
+    name: "GPIOC",
+    pins: [19, 18, 17, 16, 15, 14],
+    baseBand: 0,
+    exitEdge: "left",
+  },
   {
     name: "GPIOD_0_9",
+    exitEdge: "bottom",
     pins: [55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
     baseBand: -1,
   },
   {
     name: "GPIOD_10_22",
+    exitEdge: "right",
     pins: [67, 68, 70, 69, 71, 72, 73, 74, 75, 76, 54, 53, 52],
     baseBand: 1,
   },
   {
     name: "GPIOE",
+    exitEdge: "bottom",
     pins: [44, 45, 35, 33, 43, 42, 41, 40, 39, 38, 37, 36, 32, 31],
-    baseBand: 0,
+    baseBand: 1,
   },
-  { name: "GPIOF", pins: [7, 8, 9, 10, 11, 12, 13], baseBand: 1 },
+  {
+    name: "GPIOF",
+    pins: [7, 8, 9, 10, 11, 12, 13],
+    baseBand: 1,
+    exitEdge: "left",
+  },
   {
     name: "GPIOG",
+    exitEdge: "top",
     pins: [120, 118, 119, 121, 123, 122, 1, 2, 3, 4, 5, 6, 124, 125, 126, 127],
-    baseBand: 0,
+    baseBand: -1,
   },
-  { name: "USB0", pins: [115, 114], baseBand: -1, maxLengthSkew: 0.25 },
-  { name: "USB1", pins: [112, 113], baseBand: 1, maxLengthSkew: 0.25 },
-  { name: "MICIN3", pins: [87, 88], baseBand: 0, maxLengthSkew: 0.25 },
+  {
+    name: "USB0",
+    pins: [115, 114],
+    baseBand: 0,
+    exitEdge: "top",
+    maxLengthSkew: 0.25,
+  },
+  {
+    name: "USB1",
+    pins: [112, 113],
+    baseBand: 0,
+    exitEdge: "top",
+    maxLengthSkew: 0.25,
+  },
+  {
+    name: "MICIN3",
+    pins: [87, 88],
+    baseBand: -1,
+    exitEdge: "right",
+    maxLengthSkew: 0.25,
+  },
 ]
 const groupedPins = new Set(groupedBuses.flatMap((b) => b.pins))
 const signalBusGroups: SignalBusGroup[] = [
   ...groupedBuses,
   ...T113S3_SIGNAL_PINS.filter((p) => !groupedPins.has(p.pinNumber)).map(
-    (p, i) => ({
+    (p) => ({
       name: `AUX_${p.name.replaceAll("-", "_")}`,
       pins: [p.pinNumber],
-      baseBand: (i % 3) - 1,
+      exitEdge: (["left", "bottom", "right", "top"] as const)[
+        Math.floor((p.pinNumber - 1) / 32)
+      ]!,
+      // Pin order runs opposite the canonical band order on each QFP edge.
+      baseBand:
+        (p.pinNumber - 1) % 32 < 11 ? 1 : (p.pinNumber - 1) % 32 > 20 ? -1 : 0,
     }),
   ),
 ]
@@ -103,6 +147,7 @@ export const T113S3_SIGNAL_CONNECTIONS = T113S3_SIGNAL_BUSES.flatMap((bus) =>
     pinNumber,
     traceName: traceName(pinNumber),
     busName: bus.name,
+    targetEdge: bus.exitEdge,
   })),
 )
 export const T113S3_DIFFERENTIAL_PAIRS = [
