@@ -81,7 +81,7 @@ export async function createBoardNoopAlgorithm(
   return router
 }
 
-/** Capture after core's paired-breakout winding pass, before fanout solving. */
+/** Capture the one routed breakout after core's paired-boundary winding pass. */
 export async function captureCoreFanoutInput(circuitElement: ReactElement) {
   let captured:
     | readonly [

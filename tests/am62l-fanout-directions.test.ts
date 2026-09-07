@@ -2,6 +2,7 @@ import { expect, test } from "bun:test"
 import { FanoutSolver } from "@tscircuit/fanout-solver"
 import { AM62L_SIGNAL_BUSES } from "lib/am62l-buses"
 import {
+  Am62lFanoutCircuit,
   COMPLETE_BUS_COUNT,
   COMPLETE_CONNECTION_COUNT,
   COMPLETE_OBSTACLE_COUNT,
@@ -9,6 +10,7 @@ import {
   SIGNAL_CONNECTION_COUNT,
 } from "lib/create-am62l-fanout-sample"
 import { FANOUT_DIRECTION_CASES } from "lib/fanout-directions"
+import { Children, isValidElement, type ReactNode } from "react"
 import { AM62L_SAMPLE_DEFINITIONS } from "../samples"
 
 const EDGE_PREFIX = {
@@ -17,6 +19,19 @@ const EDGE_PREFIX = {
   bottom: "bottomside_",
   left: "leftside_",
 } as const
+
+const countRoutableBreakoutElements = (node: ReactNode): number => {
+  if (
+    !isValidElement<{ children?: ReactNode; routingDisabled?: boolean }>(node)
+  )
+    return 0
+  let count =
+    node.type === "breakout" && node.props.routingDisabled !== true ? 1 : 0
+  for (const child of Children.toArray(node.props.children)) {
+    count += countRoutableBreakoutElements(child)
+  }
+  return count
+}
 
 test("all 12 cases use core-generated breakout exits for every AM62L bus", async () => {
   expect(FANOUT_DIRECTION_CASES).toHaveLength(12)
@@ -35,6 +50,11 @@ test("all 12 cases use core-generated breakout exits for every AM62L bus", async
     "DDR_DMI0",
     "DDR_DMI1",
   ])
+  expect(
+    countRoutableBreakoutElements(
+      Am62lFanoutCircuit({ exitPosition: "rightside_center" }),
+    ),
+  ).toBe(1)
 
   for (const sampleDefinition of AM62L_SAMPLE_DEFINITIONS) {
     const sample = await sampleDefinition.createSample()
