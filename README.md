@@ -15,7 +15,8 @@ the DDR4 cases use IDs 73-74 and separate exports.
 | i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
 | T113-S3, 49-60 | T113-S3, 128 leads + EPAD | 106 | 22 | 128 | 60 | 235 |
 | AM3352, 61-72 | AM3352BZCZD80, 324 balls | 205 | 117 | 322 | 165 | 529 |
-| AM62L + DDR4, 73-74 | AM62L32BEGHAANBR + MT40A512M16LY-075:E | 49 | 0 | 49 | 23 | 469 |
+| AM62L DDR4 processor, 73 | AM62L32BEGHAANBR, 373 balls | 49 | 0 | 49 | 23 | 422 |
+| DDR4 memory, 74 | MT40A512M16LY-075:E, 96 balls | 49 | 0 | 49 | 23 | 145 |
 
 The four RAM families cover all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
@@ -33,10 +34,12 @@ Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
 
 Samples 73 and 74 isolate the two halves of one real DDR4 connection set. Each
-regular TSX circuit contains exactly one active fanout breakout and keeps the
-opposite package as a routing-disabled physical obstacle. Both use the default
-board autorouter, the fanout preset through breakout props, 0.08 mm trace and
-clearance rules, through-vias only, and no via-in-pad.
+regular TSX circuit contains exactly one BGA package and one active fanout
+breakout. A neutral 49-pad terminal bank represents the opposite side of the
+future board, so the processor sample contains no memory chip and the memory
+sample contains no processor chip. Both use the default board autorouter, the
+fanout preset through breakout props, 0.08 mm trace and clearance rules,
+through-vias only, and no via-in-pad.
 
 ## Rockchip RK3308 and DDR3L
 

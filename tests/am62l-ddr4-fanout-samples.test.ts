@@ -5,7 +5,9 @@ for (const side of ["processor", "memory"] as const) {
   test(`captures one isolated AM62L DDR4 ${side} fanout`, async () => {
     const sample = await createAm62lDdr4FanoutSample(side)
     expect(sample.simpleRouteJson.connections).toHaveLength(49)
-    expect(sample.simpleRouteJson.obstacles).toHaveLength(469)
+    expect(sample.simpleRouteJson.obstacles).toHaveLength(
+      side === "processor" ? 422 : 145,
+    )
     expect(sample.simpleRouteJson.traces ?? []).toHaveLength(0)
     expect(Reflect.get(sample.simpleRouteJson, "allowBlindAndBuriedVias")).toBe(
       false,

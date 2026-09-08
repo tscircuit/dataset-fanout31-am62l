@@ -14,6 +14,10 @@ import {
   AM62L_DDR4_CONNECTIONS,
 } from "./am62l-ddr4-connections"
 import {
+  Am62lDdr4Targets,
+  getAm62lDdr4TargetPinNumber,
+} from "./am62l-ddr4-targets"
+import {
   captureCoreFanoutInput,
   createBoardNoopAlgorithm,
 } from "./capture-core-fanout"
@@ -33,7 +37,8 @@ const FANOUT_ROUTING_LAYERS = [
   "bottom",
 ] as const
 
-const PACKAGE_OBSTACLE_COUNT = 373 + 96
+const PROCESSOR_OBSTACLE_COUNT = 373 + AM62L_DDR4_CONNECTION_COUNT
+const MEMORY_OBSTACLE_COUNT = 96 + AM62L_DDR4_CONNECTION_COUNT
 const BUS_COUNT = AM62L_DDR4_PROCESSOR_BUSES.length
 
 export interface Am62lDdr4FanoutSample {
@@ -51,7 +56,7 @@ const directionCaseBySide = {
     id: "73-am62l-ddr4-processor",
     name: "AM62L DDR4 processor fanout",
     description:
-      "Isolates the 49-signal AM62L DDR4 escape while retaining the DDR4 package as an obstacle.",
+      "Isolates the 49-signal AM62L DDR4 escape with no memory package in the problem.",
     exitPosition: "leftside_center",
     exitEdge: "left",
     majorityDirection: "left",
@@ -61,7 +66,7 @@ const directionCaseBySide = {
     id: "74-am62l-ddr4-memory",
     name: "AM62L DDR4 memory fanout",
     description:
-      "Isolates the same 49 signals at the x16 DDR4 package while retaining the AM62L package as an obstacle.",
+      "Isolates the same 49 signals at the x16 DDR4 package with no processor package in the problem.",
     exitPosition: "rightside_center",
     exitEdge: "right",
     majorityDirection: "right",
@@ -71,16 +76,6 @@ const directionCaseBySide = {
 
 const getBuses = (side: Am62lDdr4FanoutSide): readonly Am62lDdr4Bus[] =>
   side === "processor" ? AM62L_DDR4_PROCESSOR_BUSES : AM62L_DDR4_MEMORY_BUSES
-
-const getOppositeExits = (buses: readonly Am62lDdr4Bus[]) =>
-  Object.fromEntries(
-    buses.map((bus) => [
-      bus.name,
-      bus.exitPosition.startsWith("leftside_")
-        ? bus.exitPosition.replace("leftside_", "rightside_")
-        : bus.exitPosition.replace("rightside_", "leftside_"),
-    ]),
-  ) as Record<string, Am62lDdr4Bus["exitPosition"]>
 
 const DIFFERENTIAL_PAIRS = [
   ["DDR_CK_PAIR", "DDR_CK_P", "DDR_CK_N"],
@@ -97,7 +92,6 @@ export function Am62lDdr4FanoutCircuit({
   const exits = Object.fromEntries(
     buses.map((bus) => [bus.name, bus.exitPosition]),
   ) as Record<string, Am62lDdr4Bus["exitPosition"]>
-  const targetExits = getOppositeExits(buses)
   const processor = (
     <Am62l
       name="U_SOC"
@@ -143,19 +137,7 @@ export function Am62lDdr4FanoutCircuit({
           >
             {processor}
           </breakout>
-          <breakout
-            name="DDR_TARGET"
-            pcbX={-10}
-            pcbY={2.4}
-            padding="5mm"
-            paddingTop="8mm"
-            paddingBottom="8mm"
-            routingDisabled
-            fanoutRoutingLayers={[...FANOUT_ROUTING_LAYERS]}
-            busFanoutDirections={targetExits}
-          >
-            {memory}
-          </breakout>
+          <Am62lDdr4Targets pcbX={-21} />
         </>
       ) : (
         <>
@@ -172,18 +154,7 @@ export function Am62lDdr4FanoutCircuit({
           >
             {memory}
           </breakout>
-          <breakout
-            name="SOC_TARGET"
-            pcbX={10}
-            padding="5mm"
-            paddingTop="8mm"
-            paddingBottom="8mm"
-            routingDisabled
-            fanoutRoutingLayers={[...FANOUT_ROUTING_LAYERS]}
-            busFanoutDirections={targetExits}
-          >
-            {processor}
-          </breakout>
+          <Am62lDdr4Targets pcbX={21} />
         </>
       )}
       {buses.map((bus) => (
@@ -215,8 +186,12 @@ export function Am62lDdr4FanoutCircuit({
         <Fragment key={connection.name}>
           <trace
             name={connection.name}
-            from={`.U_SOC > .pin${getAm62lPinNumber(connection.socBall)}`}
-            to={`.U_DDR > .pin${getDdr4PinNumber(connection.memoryBall)}`}
+            from={
+              side === "processor"
+                ? `.U_SOC > .pin${getAm62lPinNumber(connection.socBall)}`
+                : `.U_DDR > .pin${getDdr4PinNumber(connection.memoryBall)}`
+            }
+            to={`.J_TARGET > .pin${getAm62lDdr4TargetPinNumber(connection.name)}`}
           />
         </Fragment>
       ))}
@@ -232,7 +207,10 @@ export async function createAm62lDdr4FanoutSample(
   )
   if (
     simpleRouteJson.connections.length !== AM62L_DDR4_CONNECTION_COUNT ||
-    simpleRouteJson.obstacles.length !== PACKAGE_OBSTACLE_COUNT ||
+    simpleRouteJson.obstacles.length !==
+      (side === "processor"
+        ? PROCESSOR_OBSTACLE_COUNT
+        : MEMORY_OBSTACLE_COUNT) ||
     solverOptions.buses?.length !== BUS_COUNT ||
     (simpleRouteJson.traces?.length ?? 0) !== 0
   ) {

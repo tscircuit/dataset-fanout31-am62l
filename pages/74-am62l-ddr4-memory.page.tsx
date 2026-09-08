@@ -7,7 +7,7 @@ export default function Am62lDdr4MemoryFanoutPage() {
       createSample={createSample}
       chipName="MT40A512M16LY-075:E"
       ballCount={96}
-      packageLabel="96-ball x16 DDR4 + 373-ball AM62L"
+      packageLabel="96-ball x16 DDR4"
       signalLabel="DDR4 signals"
       directionLabel="memory fanout only"
     />

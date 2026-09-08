@@ -7,7 +7,7 @@ export default function Am62lDdr4ProcessorFanoutPage() {
       createSample={createSample}
       chipName="AM62L32BEGHAANBR"
       ballCount={373}
-      packageLabel="373-ball AM62L + 96-ball x16 DDR4"
+      packageLabel="373-ball AM62L"
       signalLabel="DDR4 signals"
       directionLabel="processor fanout only"
     />
