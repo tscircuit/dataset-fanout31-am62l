@@ -85,13 +85,26 @@ export function getAm62lPinNumber(ballName: string): number {
   return pinNumber
 }
 
-export function Am62l() {
+export function Am62l({
+  name = "U1",
+  manufacturerPartNumber = "AM62L32BOGHAANBR",
+  pcbX = 0,
+  pcbY = 0,
+  pcbRotation = 0,
+}: {
+  name?: string
+  manufacturerPartNumber?: string
+  pcbX?: number
+  pcbY?: number
+  pcbRotation?: number
+} = {}) {
   return (
     <chip
-      name="U1"
-      manufacturerPartNumber="AM62L32BOGHAANBR"
-      pcbX={0}
-      pcbY={0}
+      name={name}
+      manufacturerPartNumber={manufacturerPartNumber}
+      pcbX={pcbX}
+      pcbY={pcbY}
+      pcbRotation={pcbRotation}
       footprint={
         <footprint>
           {AM62L_PAD_POSITIONS.map(({ ballName, pinNumber, x, y }) => (

@@ -1,7 +1,7 @@
 {
   "name": "@tscircuit/dataset-fanout31-am62l",
   "version": "0.0.1",
-  "description": "AM62L, Rockchip RK3308, Canaan K230, NXP i.MX 6ULL, Allwinner T113-S3, and TI AM3352BZCZD80 BGA/QFP fanout dataset with 12 directional boundary exits per chip",
+  "description": "BGA/QFP fanout dataset with directional package families and isolated AM62L-to-DDR4 processor and memory escapes",
   "module": "lib/index.ts",
   "type": "module",
   "private": true,
