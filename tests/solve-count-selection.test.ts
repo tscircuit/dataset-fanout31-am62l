@@ -1,11 +1,11 @@
 import { expect, test } from "bun:test"
 import { selectSamples } from "../scripts/count-solved-samples"
 
-test("solve-count selects all six chip families without changing legacy sample selectors", () => {
+test("solve-count selects all seven chip families without changing legacy sample selectors", () => {
   const all = selectSamples([])
-  expect(all.samples).toHaveLength(72)
+  expect(all.samples).toHaveLength(74)
   expect(all.singleSample).toBe(false)
-  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(72)
+  expect(new Set(all.samples.map((sample) => sample.id)).size).toBe(74)
 
   for (const chip of [
     "am62l",
@@ -19,6 +19,12 @@ test("solve-count selects all six chip families without changing legacy sample s
     expect(family.samples).toHaveLength(12)
     expect(family.samples.every((sample) => sample.chip === chip)).toBe(true)
   }
+
+  const am62lDdr4 = selectSamples(["--chip", "am62l-ddr4"])
+  expect(am62lDdr4.samples).toHaveLength(2)
+  expect(
+    am62lDdr4.samples.every((sample) => sample.chip === "am62l-ddr4"),
+  ).toBe(true)
 
   expect(
     selectSamples(["--chip", "t113s3", "--sample", "topside_left"]).samples.map(

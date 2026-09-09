@@ -46,6 +46,14 @@ import {
   createSample as createAm3352_72,
   exitPosition as exitAm3352_72,
 } from "./72-am3352-left-top-offset"
+import {
+  createSample as createAm62lDdr4Processor73,
+  exitPosition as exitAm62lDdr4Processor73,
+} from "./73-am62l-ddr4-processor"
+import {
+  createSample as createAm62lDdr4Memory74,
+  exitPosition as exitAm62lDdr4Memory74,
+} from "./74-am62l-ddr4-memory"
 import { getAm3352FanoutDirectionCase } from "../lib/am3352-fanout-directions"
 import { getFanoutDirectionCase } from "../lib/fanout-directions"
 import { getK230FanoutDirectionCase } from "../lib/k230-fanout-directions"
@@ -397,6 +405,19 @@ export const AM3352_SAMPLE_DEFINITIONS = [
   { exitPosition: exitAm3352_72, createSample: createAm3352_72 },
 ] as const
 
+export const AM62L_DDR4_SAMPLE_DEFINITIONS = [
+  {
+    id: "73-am62l-ddr4-processor",
+    exitPosition: exitAm62lDdr4Processor73,
+    createSample: createAm62lDdr4Processor73,
+  },
+  {
+    id: "74-am62l-ddr4-memory",
+    exitPosition: exitAm62lDdr4Memory74,
+    createSample: createAm62lDdr4Memory74,
+  },
+] as const
+
 export const FANOUT_SAMPLE_DEFINITIONS = [
   ...AM62L_SAMPLE_DEFINITIONS.map((definition) => ({
     ...definition,
@@ -427,6 +448,10 @@ export const FANOUT_SAMPLE_DEFINITIONS = [
     ...definition,
     id: getAm3352FanoutDirectionCase(definition.exitPosition).id,
     chip: "am3352" as const,
+  })),
+  ...AM62L_DDR4_SAMPLE_DEFINITIONS.map((definition) => ({
+    ...definition,
+    chip: "am62l-ddr4" as const,
   })),
 ] as const
 

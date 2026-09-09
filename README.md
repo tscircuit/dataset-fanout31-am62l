@@ -1,10 +1,11 @@
 # dataset-fanout31-am62l
 
-Seventy-two TSX-generated BGA/QFP fanout problems: twelve AM62L, twelve
+Seventy-four TSX-generated BGA/QFP fanout problems: twelve AM62L, twelve
 Rockchip RK3308-to-DDR3L, twelve Canaan K230-to-LPDDR4, and twelve
 NXP i.MX 6ULL-to-DDR3L, twelve Allwinner T113-S3 all-pin configurations,
-and twelve TI AM3352BZCZD80 all-pin configurations. The package name and
-existing IDs 01-60 remain stable; AM3352 uses IDs 61-72 and separate exports.
+and twelve TI AM3352BZCZD80 all-pin configurations, plus separate processor-
+and memory-side AM62L-to-DDR4 fanout cases. Existing IDs 01-72 remain stable;
+the DDR4 cases use IDs 73-74 and separate exports.
 
 | Sample family | SoC package | Signal connections | Plane drops | Total connections | Buses | Physical pads |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
@@ -14,6 +15,8 @@ existing IDs 01-60 remain stable; AM3352 uses IDs 61-72 and separate exports.
 | i.MX 6ULL, 37-48 | MCIMX6Y2CVM08AB, 289 balls | 49 | 53 | 102 | 62 | 385 |
 | T113-S3, 49-60 | T113-S3, 128 leads + EPAD | 106 | 22 | 128 | 60 | 235 |
 | AM3352, 61-72 | AM3352BZCZD80, 324 balls | 205 | 117 | 322 | 165 | 529 |
+| AM62L DDR4 processor, 73 | AM62L32BEGHAANBR, 373 balls | 49 | 0 | 49 | 23 | 422 |
+| DDR4 memory, 74 | MT40A512M16LY-075:E, 96 balls | 49 | 0 | 49 | 23 | 145 |
 
 The four RAM families cover all twelve canonical directional edge positions in
 `@tscircuit/fanout-solver`:
@@ -29,6 +32,14 @@ exits on all four edges in every case.
 
 Every problem has a source circuit in `samples/*.tsx` and an independently
 selectable `pages/*.page.tsx` React Cosmos fixture.
+
+Samples 73 and 74 isolate the two halves of one real DDR4 connection set. Each
+regular TSX circuit contains exactly one BGA package and one active fanout
+breakout. A neutral 49-pad terminal bank represents the opposite side of the
+future board, so the processor sample contains no memory chip and the memory
+sample contains no processor chip. Both use the default board autorouter, the
+fanout preset through breakout props, 0.08 mm trace and clearance rules,
+through-vias only, and no via-in-pad.
 
 ## Rockchip RK3308 and DDR3L
 
@@ -384,7 +395,7 @@ bun run build:site
 ```
 
 `solve-count` reports the measured solver success count with a 60-second
-timeout per sample in a family run. With no arguments it runs all 72
+timeout per sample in a family run. With no arguments it runs all 74
 samples; use `--chip` to select a family:
 
 ```sh
@@ -395,11 +406,13 @@ bun run solve-count --chip k230
 bun run solve-count --chip imx6ull
 bun run solve-count --chip t113s3
 bun run solve-count --chip am3352
+bun run solve-count --chip am62l-ddr4
 bun run solve-count --sample 13-rk3308-top-left-offset
 bun run solve-count --sample 25-k230-top-left-offset
+bun run solve-count --sample 73-am62l-ddr4-processor
 ```
 
 `FANOUT_SAMPLE_TIMEOUT_MS` overrides the timeout for family runs. A
 `--sample` invocation runs directly and returns one JSON result. Legacy
 exit selectors such as `--sample topside_left` still select AM62L unless
-`--chip rk3308`, `--chip k230`, `--chip imx6ull`, `--chip t113s3`, or `--chip am3352` is supplied.
+`--chip rk3308`, `--chip k230`, `--chip imx6ull`, `--chip t113s3`, `--chip am3352`, or `--chip am62l-ddr4` is supplied.
